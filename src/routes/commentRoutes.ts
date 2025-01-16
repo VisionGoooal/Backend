@@ -6,7 +6,7 @@ import { getCommentsByPostId } from "../controllers/comment";
 const router = express.Router();
 
 router.get("/", BaseController.getAll);
-router.post("/",authMiddleware, BaseController.createItem);
+router.post("/", BaseController.createItem);
 router.get("/:postId", getCommentsByPostId);
 router.put("/:id",authMiddleware, BaseController.updateItem);
 router.delete("/:id",authMiddleware, BaseController.deleteItem);
