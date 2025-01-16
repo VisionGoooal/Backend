@@ -2,6 +2,7 @@ import express, { Express } from "express";
 import dotenv from "dotenv";
 dotenv.config();
 import bodyParser from "body-parser";
+import cors from "cors";
 import postsRoutes from "./routes/postRoutes";
 import commentsRoutes from "./routes/commentRoutes";
 import mongoose from "mongoose";
@@ -9,7 +10,8 @@ import authRoutes from "./routes/authRoutes";
 import { Server } from "socket.io";
 import { chatSocket } from "./socket/chatSocket";
 
-const app = express();
+
+const app: Express = express();
 const PORT = process.env.PORT || 3000;
 
 mongoose
@@ -20,6 +22,8 @@ mongoose
     .catch((error) => {
         console.error("Error connecting to the database:", error.message);
     });
+
+app.use(cors({ origin: "http://localhost:5173" })); 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
