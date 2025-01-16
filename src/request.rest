@@ -1,0 +1,24 @@
+###
+
+POST http://localhost:3000/post
+Content-Type: application/json
+
+{
+    "title": "Hello",
+    "content": "Hello World...",
+    "owner": "ani"
+    
+}
+
+###
+
+POST http://localhost:3000/comment
+Content-Type: application/json
+
+{
+    "title": "hear me out",
+    "content": "i dont agree with that at all",
+    "postId": "678862c55d71e830127181df",
+    "owner": "me"
+    
+}
