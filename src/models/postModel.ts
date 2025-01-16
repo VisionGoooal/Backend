@@ -6,6 +6,7 @@ export interface IPost {
   title: string;
   content: string;
   owner: string;
+  likes: number;
 }
 
 // Define the schema for the posts collection
@@ -13,6 +14,7 @@ const postSchema: Schema = new Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
   owner: { type: String, required: true },
+  likes: { type: Number, default: 0 },
 });
 
 // Pre-remove hook to delete associated comments
