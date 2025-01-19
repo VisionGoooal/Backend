@@ -3,6 +3,9 @@ import { Model } from "mongoose";
 import commentsModel from "../models/commentModel";
 
 class BaseController<T> {
+  likePost(arg0: string, likePost: any) {
+      throw new Error("Method not implemented.");
+  }
   model: Model<T>;
 
   constructor(model: Model<T>) {
