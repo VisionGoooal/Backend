@@ -6,7 +6,8 @@ Content-Type: application/json
 {
     "title": "Hello",
     "content": "Hello World...",
-    "owner": "ani"
+    "owner": "ani",
+    "likes": 0
     
 }
 
