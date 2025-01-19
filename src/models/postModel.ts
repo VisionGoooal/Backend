@@ -7,6 +7,7 @@ export interface IPost {
   content: string;
   owner: string;
   likes: number;
+  image?: string; // Optional field for image
 }
 
 // Define the schema for the posts collection
@@ -15,10 +16,11 @@ const postSchema: Schema = new Schema({
   content: { type: String, required: true },
   owner: { type: String, required: true },
   likes: { type: Number, default: 0 },
+  image: { type: String, default: null }, // Optional image field
 });
 
 // Pre-remove hook to delete associated comments
-postSchema.pre('findOneAndDelete', async function (next) {
+postSchema.pre("findOneAndDelete", async function (next) {
   const postId = this.getQuery()["_id"];
   await commentModel.deleteMany({ postId });
   next();
