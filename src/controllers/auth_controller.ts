@@ -57,7 +57,11 @@ const login = async (req: Request, res: Response) => {
       res.status(400).send("wrong email or password2");
       return;
     }
+    console.log(user._id);
+    
     const tokens = generateTokens(user._id);
+    console.log(tokens?.accessToken);
+    
     if(!tokens){
         res.status(500).send('server error');
         return;
@@ -79,6 +83,7 @@ const login = async (req: Request, res: Response) => {
 
 const logout = async (req: Request, res: Response) => {
   const refreshToken = req.body.refreshToken;
+  console.log(refreshToken);
   if (!refreshToken) {
     res.status(400).send("bad request");
     return;
