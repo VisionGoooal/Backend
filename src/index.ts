@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import postsRoutes from "./routes/postRoutes";
 import commentsRoutes from "./routes/commentRoutes";
 import authRoutes from "./routes/authRoutes";
+import predictionRoutes from "./routes/predictionRoutes";
 import { Server } from "socket.io";
 import { chatSocket } from "./socket/chatSocket";
 import multer from "multer";
@@ -55,6 +56,7 @@ const upload = multer({ storage });
 app.use("/post", postsRoutes);
 app.use("/comment", commentsRoutes);
 app.use("/auth", authRoutes);
+app.use("/prediction", predictionRoutes);
 
 // Start the server
 const server = app.listen(PORT, () => {
