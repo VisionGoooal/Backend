@@ -1,5 +1,7 @@
 import OpenAI from 'openai';
 import axios from 'axios';
+import exp from 'constants';
+import predictionModel from '../models/predictionModel';
 
 
 
@@ -39,6 +41,19 @@ export const generatePrediction = async (prompt: string): Promise<string> => {
     throw error;
   }
 };
+
+export const deleteAllPredictions = async () => {
+  try {
+    // Delete all predictions from the database
+    await predictionModel.deleteMany();
+    console.log("Yesterday predictions deleted successfully");
+    return;
+  } catch (error) {
+    console.error("Error deleting predictions:", error);
+    throw error;
+  }
+}
+
 
 
 interface Team {
@@ -105,6 +120,8 @@ export const createPromptForMatches = async (): Promise<string> => {
 
     // Create a prompt for the upcoming matches
     const prompt = `You are a football match prediction expert. Based on your analysis of recent team performance, historical data, and current form, provide predictions for the following matches in a precise JSON format.
+    Please return only the JSON object without any additional text, disclaimers etc.
+
 
     Rules for predictions:
     1. Scores should be realistic (typically 0-5 goals per team)
