@@ -1,4 +1,4 @@
-import { generatePrediction, createPromptForMatches } from '../services/predictionService';
+import { generatePrediction, createPromptForMatches, deleteAllPredictions } from '../services/predictionService';
 import predictionModel from '../models/predictionModel';
 import postModel from '../models/postModel';
 import cron from 'node-cron';
@@ -16,11 +16,14 @@ export const getAllPredictions = async (req: any, res: any) => {
 // Function to create predictions automatically
 export const createPredictionsAutomatically = async () => {
   try {
+
+    const response = await deleteAllPredictions();
     // Create a prompt for the upcoming matches
     const prompt = await createPromptForMatches();
 
     // Generate predictions based on the prompt
     let gptResponseString = await generatePrediction(prompt);
+    console.log('Prediction received:', gptResponseString);
     gptResponseString = gptResponseString.trim()
     .replace(/^```json\s*\n|\n```$/g, '');
     const gptResponse = JSON.parse(gptResponseString);
@@ -79,7 +82,7 @@ export const createPostByPrediction = async (req: any, res: any) => {
 
 
 // Create predictions automatically every day at 6:00 AM
-cron.schedule('0 6 * * *', async () => {
+cron.schedule('* * * * *', async () => {
   try {
     const prompt = await createPredictionsAutomatically();
     console.log("Generated prompt for matches:", prompt);
