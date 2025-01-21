@@ -21,7 +21,8 @@ export const createPredictionsAutomatically = async () => {
 
     // Generate predictions based on the prompt
     let gptResponseString = await generatePrediction(prompt);
-    gptResponseString = gptResponseString.trim().replace(/^```json\s*\n|\n```$/g, '');
+    gptResponseString = gptResponseString.trim()
+    .replace(/^```json\s*\n|\n```$/g, '');
     const gptResponse = JSON.parse(gptResponseString);
 
     console.log('Prediction received:', gptResponse);
