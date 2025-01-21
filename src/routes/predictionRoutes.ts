@@ -4,6 +4,7 @@ import { authMiddleware } from "../controllers/auth_controller";
 
 const router = express.Router();
 
+router.post("/", predictionController.createPredictionsAutomatically);
 router.post("/post", predictionController.createPostByPrediction);
 
 

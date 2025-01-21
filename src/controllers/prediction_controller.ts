@@ -1,38 +1,51 @@
-import predictionModel,{IPrediction} from "../models/predictionModel";
-import postModel from "../models/postModel";
-// import base_controller from "./base_controller";
+import { generatePrediction, createPromptForMatches } from '../services/predictionService';
+import predictionModel from '../models/predictionModel';
+import postModel from '../models/postModel';
+import cron from 'node-cron';
 
-// const BaseController = new base_controller<IPrediction>(predictionModel);
+// Function to create predictions automatically
+export const createPredictionsAutomatically = async () => {
+  try {
+    // Create a prompt for the upcoming matches
+    const prompt = await createPromptForMatches();
 
-// const { GPT } = require('gpt-3');
-// const gpt = new GPT({
-//   apiKey: process.env.OPENAI_API_KEY
-// });
+    // Generate predictions based on the prompt
+    let gptResponseString = await generatePrediction(prompt);
+    gptResponseString = gptResponseString.replace(/^```json\n|\n```$/g, '');
+    const gptResponse = JSON.parse(gptResponseString);
 
-// export const createItem = async (req: any, res: any) => {
-//     const data = req.body;
-//     try {
-//         const prompt = data.prompt;  
-//         const response = await gpt.complete(prompt);
-//         const gptResponse = response.choices[0].text;
-//         const [team1, team2, score, winner, date] = gptResponse.split("\n");
+    console.log('Prediction received:', gptResponse);
 
-        
-//         const predictionData = {
-//             Team1: team1.split(": ")[1],  
-//             Team2: team2.split(": ")[1],  
-//             Team1Score: parseInt(score.split(" - ")[0]),  
-//             Team2Score: parseInt(score.split(" - ")[1]),  
-//             Winner: winner.split(": ")[1],  
-//             Date: date.split(": ")[1]  
-//         };
+    if (!gptResponse) {
+      throw new Error('No prediction received');
+    }
 
-//         const newItem = await predictionModel.create(predictionData);
-//         res.status(201).send(newItem);
-//     } catch (error) {
-//         res.status(400).send(error);
-//     }
-// };
+
+    // Loop through the predictions and save them to the database
+    for (const prediction of gptResponse.predictions) {
+        try {
+          const predictionData = {
+            Team1: prediction.Team1,
+            Team2: prediction.Team2,
+            Team1Score: prediction.Team1Score,
+            Team2Score: prediction.Team2Score,
+            Winner: prediction.Winner,
+            Date: prediction.Date,
+          };
+    
+          // Save the prediction to the database
+          await predictionModel.create(predictionData)
+          
+          console.log('Predictions successfully created');
+        } catch (error) {
+            console.error('Error creating predictions:', error);
+             }
+    }
+  } catch (error) {
+    console.error('Error generating predictions:', error);
+  }
+};
+
 
 export const createPostByPrediction = async (req: any, res: any) => {
     const { title, content, owner, image, likes } = req.body;
@@ -53,6 +66,18 @@ export const createPostByPrediction = async (req: any, res: any) => {
 }
 
 
-export default {createPostByPrediction};
+
+// Create predictions automatically every day at 6:00 AM
+cron.schedule('0 6 * * *', async () => {
+  try {
+    const prompt = await createPredictionsAutomatically();
+    console.log("Generated prompt for matches:", prompt);
+  } catch (error) {
+    console.error("Error generating prompt:", error);
+  }
+});
+
+
+export default {createPostByPrediction,createPredictionsAutomatically};
 
 
