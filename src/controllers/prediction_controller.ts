@@ -3,6 +3,16 @@ import predictionModel from '../models/predictionModel';
 import postModel from '../models/postModel';
 import cron from 'node-cron';
 
+export const getAllPredictions = async (req: any, res: any) => {
+    try {
+        const predictions = await predictionModel.find();
+        res.status(200).json(predictions);
+    } catch (error) {
+        console.error("Error getting predictions:", error);
+        res.status(500).json({ message: "An error occurred while getting predictions" });
+    }
+}
+
 // Function to create predictions automatically
 export const createPredictionsAutomatically = async () => {
   try {
@@ -11,7 +21,7 @@ export const createPredictionsAutomatically = async () => {
 
     // Generate predictions based on the prompt
     let gptResponseString = await generatePrediction(prompt);
-    gptResponseString = gptResponseString.replace(/^```json\n|\n```$/g, '');
+    gptResponseString = gptResponseString.trim().replace(/^```json\s*\n|\n```$/g, '');
     const gptResponse = JSON.parse(gptResponseString);
 
     console.log('Prediction received:', gptResponse);
@@ -78,6 +88,6 @@ cron.schedule('0 6 * * *', async () => {
 });
 
 
-export default {createPostByPrediction,createPredictionsAutomatically};
+export default {createPostByPrediction,createPredictionsAutomatically, getAllPredictions};
 
 
