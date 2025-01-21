@@ -82,7 +82,7 @@ export const createPostByPrediction = async (req: any, res: any) => {
 
 
 // Create predictions automatically every day at 6:00 AM
-cron.schedule('* * * * *', async () => {
+cron.schedule('0 6 * * *', async () => {
   try {
     const prompt = await createPredictionsAutomatically();
     console.log("Generated prompt for matches:", prompt);
