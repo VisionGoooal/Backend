@@ -1,60 +1,93 @@
-import predictionModel,{IPrediction} from "../models/predictionModel";
-import base_controller from "./base_controller";
+import { generatePrediction, createPromptForMatches } from '../services/predictionService';
+import predictionModel from '../models/predictionModel';
+import postModel from '../models/postModel';
+import cron from 'node-cron';
 
-const BaseController = new base_controller<IPrediction>(predictionModel);
-
-const { GPT } = require('gpt-3');
-const gpt = new GPT({
-  apiKey: process.env.OPENAI_API_KEY
-});
-
-export const createItem = async (req: any, res: any) => {
-    const data = req.body;
+export const getAllPredictions = async (req: any, res: any) => {
     try {
-        const prompt = data.prompt;  
-        const response = await gpt.complete(prompt);
-        const gptResponse = response.choices[0].text;
-        const [team1, team2, score, winner, date] = gptResponse.split("\n");
-
-        
-        const predictionData = {
-            Team1: team1.split(": ")[1],  
-            Team2: team2.split(": ")[1],  
-            Team1Score: parseInt(score.split(" - ")[0]),  
-            Team2Score: parseInt(score.split(" - ")[1]),  
-            Winner: winner.split(": ")[1],  
-            Date: date.split(": ")[1]  
-        };
-
-        const newItem = await predictionModel.create(predictionData);
-        res.status(201).send(newItem);
+        const predictions = await predictionModel.find();
+        res.status(200).json(predictions);
     } catch (error) {
-        res.status(400).send(error);
+        console.error("Error getting predictions:", error);
+        res.status(500).json({ message: "An error occurred while getting predictions" });
     }
+}
+
+// Function to create predictions automatically
+export const createPredictionsAutomatically = async () => {
+  try {
+    // Create a prompt for the upcoming matches
+    const prompt = await createPromptForMatches();
+
+    // Generate predictions based on the prompt
+    let gptResponseString = await generatePrediction(prompt);
+    gptResponseString = gptResponseString.trim().replace(/^```json\s*\n|\n```$/g, '');
+    const gptResponse = JSON.parse(gptResponseString);
+
+    console.log('Prediction received:', gptResponse);
+
+    if (!gptResponse) {
+      throw new Error('No prediction received');
+    }
+
+
+    // Loop through the predictions and save them to the database
+    for (const prediction of gptResponse.predictions) {
+        try {
+          const predictionData = {
+            Team1: prediction.Team1,
+            Team2: prediction.Team2,
+            Team1Score: prediction.Team1Score,
+            Team2Score: prediction.Team2Score,
+            Winner: prediction.Winner,
+            Date: prediction.Date,
+          };
+    
+          // Save the prediction to the database
+          await predictionModel.create(predictionData)
+          
+          console.log('Predictions successfully created');
+        } catch (error) {
+            console.error('Error creating predictions:', error);
+             }
+    }
+  } catch (error) {
+    console.error('Error generating predictions:', error);
+  }
 };
 
 
-export default BaseController
+export const createPostByPrediction = async (req: any, res: any) => {
+    const { title, content, owner, image, likes } = req.body;
+    const newPost = new postModel({
+        title,
+        content,
+        owner,
+        likes,
+        image
+    });
+    try {
+        await newPost.save();
+        res.status(201).json(newPost);
+    } catch (error) {
+        console.error("Error adding post:", error);
+        res.status(500).json({ message: "An error occurred while adding the post" });
+    }
+}
 
 
 
-
-/*
--getAll
--createItem:send prompt to GPT and save the response in the database
-
--getDataById
--updateItem
--deleteItem
-
-Team 1: Real Madrid
-Team 2: Barcelona
-Score: Real Madrid 3 - 1 Barcelona
-Winner: Real Madrid
-Date: 2025-01-13
+// Create predictions automatically every day at 6:00 AM
+cron.schedule('0 6 * * *', async () => {
+  try {
+    const prompt = await createPredictionsAutomatically();
+    console.log("Generated prompt for matches:", prompt);
+  } catch (error) {
+    console.error("Error generating prompt:", error);
+  }
+});
 
 
-/*
-
+export default {createPostByPrediction,createPredictionsAutomatically, getAllPredictions};
 
 
