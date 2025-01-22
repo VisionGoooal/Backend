@@ -139,7 +139,7 @@ export const createPromptForMatches = async (): Promise<string> => {
                 "Team2": "OpponentNameHere",
                 "Team1Score": x,
                 "Team2Score": y,
-                "Winner": "Team1/Team2/Draw",
+                "Winner": "The name of the winning team/Draw",
                 "Date": "YYYY-MM-DD"
             }
         ]
