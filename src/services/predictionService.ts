@@ -83,9 +83,7 @@ export const fetchUpcomingMatches = async (): Promise<Match[]> => {
   
   const fromDate = currentDate.toISOString().split('T')[0];
   const toDate = tomorrow.toISOString().split('T')[0];
-
-
-
+  
   try {
     // Fetch upcoming matches from the API
     const response = await axios.get<ApiResponse>(apiUrl, {
@@ -117,6 +115,10 @@ export const createPromptForMatches = async (): Promise<string> => {
   const matchDetails = matches
     .map((match) => `${match.homeTeam.name} vs ${match.awayTeam.name} - ${match.utcDate}`)
     .join("\n");
+
+    if(!matchDetails) {
+       throw new Error('No matches found');
+    }
 
     // Create a prompt for the upcoming matches
     const prompt = `You are a football match prediction expert. Based on your analysis of recent team performance, historical data, and current form, provide predictions for the following matches in a precise JSON format.
