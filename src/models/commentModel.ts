@@ -2,7 +2,6 @@ import mongoose, { Schema, Model } from "mongoose";
 
 // Define an interface for the Comment document
 export interface IComment {
-  title: string;
   content: string;
   postId: string;
   owner: string;
@@ -10,7 +9,6 @@ export interface IComment {
 
 // Define the schema
 const commentSchema: Schema = new Schema({
-  title: { type: String, required: true },
   content: { type: String, required: true },
   postId: { type: String, required: true },
   owner: { type: String, required: true },
