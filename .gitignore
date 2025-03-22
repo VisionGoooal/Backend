@@ -7,18 +7,61 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Build output
+dist/
+dist-ssr/
+build/
+.cache/
+.next/
+out/
+public/build/
+
+# System files
 .DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*.local
+!.env.example
+
+# IDEs and editors
+.vscode/
+!.vscode/extensions.json
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# OS files
+*.swp
+*.tmp
+*.bak
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+
+# Typescript
+*.tsbuildinfo
+
+# Misc
+.eslintcache
+.parcel-cache/
+.cache/
+firebase-debug.log
+yarn.lock
+
