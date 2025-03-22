@@ -117,7 +117,45 @@ export const createPromptForMatches = async (): Promise<string> => {
     .join("\n");
 
     if(!matchDetails) {
-       throw new Error('No matches found');
+      const prompt = `You are a football match prediction expert. Based on your analysis of recent team performance, historical data, and current form, provide predictions for the following matches in a precise JSON format.
+      Please return only the JSON object without any additional text, disclaimers etc.
+  
+  
+      Rules for predictions:
+      1. Scores should be realistic (typically 0-5 goals per team)
+      2. Winner must be exactly one of: Team1, Team2, or "Draw"
+      3. Team names must match exactly as provided
+      4. Date format must be YYYY-MM-DD
+      5. All fields are required
+      
+      Please provide predictions in the following JSON format, matching the IPrediction interface:
+      
+      {
+          "predictions": [
+              {
+                  "Team1": "TeamNameHere",
+                  "Team2": "OpponentNameHere",
+                  "Team1Score": x,
+                  "Team2Score": y,
+                  "Winner": "The name of the winning team/Draw",
+                  "Date": "YYYY-MM-DD"
+              }
+          ]
+      }
+      
+      Matches to predict: generate matches as you like
+      
+      Provide detailed predictions that consider:
+      - Recent team performance
+      - Head-to-head history
+      - Home/away form
+      - Current injuries/suspensions
+      - Team tactics and playing style
+      
+      Return the predictions in valid JSON format that exactly matches the IPrediction interface structure.`;
+  
+      
+      return prompt;
     }
 
     // Create a prompt for the upcoming matches
