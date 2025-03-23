@@ -1,78 +1,117 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Response, Request, NextFunction } from "express";
-import userModel from "../models/userModel";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { JwtPayload } from "jsonwebtoken";
-import path from "path";
+import { Request, Response, NextFunction } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
+// @ts-ignore
+import bcrypt from "bcryptjs";
+import User from "../models/userModel";
 
 /**
- * 📌 Generate JWT Tokens (Access & Refresh)
+ * Generate Access Token
  */
-const generateTokens = (
-  id: string
-): { accessToken: string; refreshToken: string } | null => {
-  const random = Math.floor(Math.random() * 1000000);
-  if (!process.env.JWT_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
-    return null;
-  }
-  const accessToken = jwt.sign({ _id: id, random }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || "1h",
-  });
-  const refreshToken = jwt.sign(
-    { _id: id, random },
-    process.env.REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || "7d",
-    }
+const generateAccessToken = (userId: string): string => {
+  return jwt.sign(
+    { id: userId },
+    (process.env.JWT_SECRET as jwt.Secret) || "default_secret", // Ensures a fallback if JWT_SECRET is missing
+    { expiresIn: process.env.JWT_EXPIRES_IN || "1h" } as jwt.SignOptions
   );
-  return { accessToken, refreshToken };
 };
 
 /**
- * 📌 Register New User
+ * Generate Refresh Token
  */
-const register = async (req: Request, res: Response) => {
-  try {
-    const { userFullName, email, password, country, dateOfBirth } = req.body;
+const generateRefreshToken = (userId: string): string => {
+  return jwt.sign(
+    { id: userId },
+    (process.env.REFRESH_TOKEN_SECRET as jwt.Secret) ||
+      "default_refresh_secret", // Ensures a fallback if REFRESH_TOKEN_SECRET is missing
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || "7d",
+    } as jwt.SignOptions
+  );
+};
 
-    // Check if user already exists
-    const existingUser = await userModel.findOne({ email });
+/**
+ * User Login & Token Generation
+ */
+export const register = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const {
+      userFullName,
+      email,
+      password,
+      confirmPassword,
+      country,
+      dateOfBirth,
+    } = req.body;
+
+    // 🔹 Validate required fields
+    if (
+      !userFullName ||
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !country ||
+      !dateOfBirth
+    ) {
+      res.status(400).json({ message: "All fields are required" });
+      return;
+    }
+
+    // 🔹 Password match check
+    if (password !== confirmPassword) {
+      res.status(400).json({ message: "Passwords do not match" });
+      return;
+    }
+
+    // 🔹 Check if user already exists
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       res.status(400).json({ message: "User already exists" });
       return;
     }
 
-    // Hash password securely
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new user in MongoDB
-    const newUser = await userModel.create({
-      userFullName, // ✅ Correct field name
-      email,
-      password: hashedPassword,
-      country: country || "Unknown", // Default if not provided
-      dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : new Date("2000-01-01"), // Default if not provided
-    });
-
-    // Generate JWT tokens
-    const tokens = generateTokens(newUser._id.toString());
-    if (!tokens) {
-      res.status(500).json({ message: "Server error" });
+    if (password.length < 6) {
+      res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
       return;
     }
 
-    // Save refresh token
-    newUser.refreshToken = [tokens.refreshToken];
+    const dob = new Date(dateOfBirth);
+    const today = new Date();
+
+    if (dob >= today) {
+      res.status(400).json({ message: "Invalid date of birth" });
+      return;
+    }
+
+    // 🔹 Hash password securely
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 🔹 Create new user in MongoDB
+    const newUser = await User.create({
+      userFullName,
+      email,
+      password: hashedPassword,
+      country,
+      dateOfBirth,
+    });
+
+    // 🔹 Generate JWT tokens
+    const accessToken = generateAccessToken(newUser._id.toString());
+    const refreshToken = generateRefreshToken(newUser._id.toString());
+
+    // 🔹 Save refresh token
+    newUser.refreshToken = [refreshToken];
     await newUser.save();
 
+    // 🔹 Respond with user data & tokens
     res.status(201).json({
       message: "User registered successfully",
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
+      accessToken,
+      refreshToken,
       user: {
         id: newUser._id,
-        userFullName: newUser.userFullName,
+        username: newUser.userFullName,
         email: newUser.email,
         country: newUser.country,
         dateOfBirth: newUser.dateOfBirth,
@@ -80,85 +119,66 @@ const register = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("❌ Error in register:", error);
-
-    res.status(500).json({
-      message: "Server error!",
-      error: (error as Error).message,
-    });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 /**
  * 📌 Login User
  */
-const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
+export const login = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user = await userModel.findOne({ email });
+    const { email, password } = req.body;
+
+    // 🔹 Validate input
+    if (!email || !password) {
+      res.status(400).json({ message: "Email and password are required" });
+      return;
+    }
+
+    // 🔹 Check if user exists
+    const user = await User.findOne({ email });
     if (!user) {
-      res.status(400).json({ message: "Invalid email or password" });
+      res.status(400).json({ message: "Wrong email or password" });
       return;
     }
 
-    const validPassword = user.password
-      ? await bcrypt.compare(password, user.password)
-      : false;
-    if (!validPassword) {
-      res.status(400).json({ message: "Invalid email or password" });
+    // 🔹 Verify password
+    if (!user.password) {
+      res.status(400).json({ message: "Wrong email or password" });
       return;
     }
 
-    const tokens = generateTokens(user._id);
-    if (!tokens) {
-      res.status(500).json({ message: "Server error" });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      res.status(400).json({ message: "Wrong email or password" });
       return;
     }
 
-    if (user.refreshToken) {
-      user.refreshToken.push(tokens.refreshToken);
-    } else {
-      user.refreshToken = [tokens.refreshToken];
-    }
+    // 🔹 Generate tokens
+    const accessToken = generateAccessToken(user._id.toString());
+    const refreshToken = generateRefreshToken(user._id.toString());
+
+    // 🔹 Save refresh token in database
+    user.refreshToken = [refreshToken];
     await user.save();
 
-    res.status(200).json({
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
+    // 🔹 Respond with user data and tokens
+    res.json({
+      message: "Login successful",
+      accessToken,
+      refreshToken,
       user: {
         id: user._id,
+        userFullName: user.userFullName,
         email: user.email,
+        country: user.country,
+        dateOfBirth: user.dateOfBirth,
+        profileImage: user.profileImage,
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-/**
- * 📌 Logout User (Invalidate Refresh Token)
- */
-const logout = async (req: Request, res: Response) => {
-  const { refreshToken } = req.body;
-
-  if (!refreshToken) {
-    res.status(400).json({ message: "Bad request" });
-    return;
-  }
-
-  try {
-    const user = await userModel.findOne({ refreshToken });
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
-      return;
-    }
-
-    if (user.refreshToken) {
-      user.refreshToken = user.refreshToken.filter((t) => t !== refreshToken);
-    }
-    await user.save();
-    res.status(200).json({ message: "Logged out successfully" });
-  } catch (error) {
+    console.error("❌ Error in login:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -166,175 +186,265 @@ const logout = async (req: Request, res: Response) => {
 /**
  * 📌 Refresh Access Token
  */
-const refresh = async (req: Request, res: Response) => {
-  const { refreshToken } = req.body;
-
-  if (!refreshToken) {
-    res.status(400).json({ message: "Bad request" });
-    return;
-  }
-
+export const refreshToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
+    const { token } = req.body;
+
+    if (!token) {
+      res.status(401).json({ message: "Invalid or expired token" });
+      return;
+    }
+
+    // Verify the refresh token
     const decoded = jwt.verify(
-      refreshToken,
+      token,
       process.env.REFRESH_TOKEN_SECRET as string
     ) as JwtPayload;
 
-    const user = await userModel.findById(decoded._id);
-    if (
-      !user ||
-      !user.refreshToken ||
-      !user.refreshToken.includes(refreshToken)
-    ) {
-      res.status(401).json({ message: "Unauthorized" });
+    if (!decoded.id) {
+      res.status(401).json({ message: "Invalid or expired token" });
       return;
     }
 
-    const newTokens = generateTokens(user._id);
-    if (!newTokens) {
-      res.status(500).json({ message: "Server error" });
+    // Find user in DB
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
       return;
     }
 
-    user.refreshToken = user.refreshToken.filter((t) => t !== refreshToken);
-    user.refreshToken.push(newTokens.refreshToken);
-    await user.save();
+    // Generate a new access token
+    const newAccessToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: "1h",
+      }
+    );
 
-    res.status(200).json({
-      accessToken: newTokens.accessToken,
-      refreshToken: newTokens.refreshToken,
-    });
+    res.status(200).json({ accessToken: newAccessToken });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error("❌ Error refreshing token:", error);
+    next(error); // ✅ Properly forward errors to Express error handler
   }
 };
 
 /**
- * 📌 Google Authentication Callback
+ * 📌 Logout User (Invalidate Refresh Token)
  */
-const googleAuthCallback = async (req: Request, res: Response): Promise<void> => {
+export const logout = async (req: Request, res: Response): Promise<void> => {
   try {
-    const googleUser = req.user as any; // Google OAuth user object
+    const { token } = req.body;
+    if (!token) {
+      res.status(400).json({ message: "Refresh token required" });
+      return;
+    }
 
-    console.log("🔍 Google User Data:", googleUser); // ✅ Add this for debugging
+    // 🔹 Find user and remove refresh token
+    const user = await User.findOneAndUpdate(
+      { refreshToken: token },
+      { refreshToken: [] }
+    );
+    if (!user) {
+      res.status(400).json({ message: "User not found" });
+      return;
+    }
+
+    res.json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("❌ Error in logout:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const googleAuthCallback = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const googleUser = req.user as any;
+
+    console.log("🔍 Google User Data:", googleUser);
 
     if (!googleUser || !googleUser.email) {
       res.status(400).json({ message: "Google login failed" });
       return;
     }
 
-    let user = await userModel.findOne({ email: googleUser.email });
+    let user = await User.findOne({ email: googleUser.email });
 
     if (!user) {
-      // 🔹 Ensure `userFullName` exists (fallback to email username)
-      const safeUserName = googleUser.displayName || googleUser.email.split("@")[0] || "GoogleUser";
+      const safeUserName =
+        googleUser.displayName ||
+        googleUser.email.split("@")[0] ||
+        "GoogleUser";
 
-      console.log("✅ Setting userFullName as:", safeUserName); // ✅ Debugging
-
-      user = new userModel({
-        userFullName: safeUserName, // ✅ Ensure it's never empty
+      user = new User({
+        userFullName: safeUserName,
         email: googleUser.email,
-        profileImage: googleUser.picture || "", // Store profile picture
-        refreshToken: [], // Initialize empty array for refresh tokens
+        profileImage:
+          googleUser.picture ||
+          "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-173524.jpg?t=st=1742145365~exp=1742148965~hmac=bd302071cdce6ac960ce3e2f8fee275629adf2d0ffcd7e26625d0175a2daf20a&w=740", // fallback image
+        refreshToken: [],
         country: "Unknown",
-        dateOfBirth: new Date("2000-01-01"), // Default date if missing
+        dateOfBirth: new Date("2000-01-01"),
       });
 
       await user.save();
     }
 
-    // Generate tokens
-    const tokens = generateTokens(user._id.toString());
-    if (!tokens) {
-      res.status(500).json({ message: "Server error" });
-      return;
-    }
+    const accessToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET || "default_secret",
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN || "1h",
+      } as jwt.SignOptions
+    );
 
-    user.refreshToken = [tokens.refreshToken];
+    const refreshToken = jwt.sign(
+      { id: user._id },
+      process.env.REFRESH_TOKEN_SECRET || "default_refresh_secret",
+      {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || "7d",
+      } as jwt.SignOptions
+    );
+
+    user.refreshToken = [refreshToken];
     await user.save();
 
     res.redirect(
-      `http://localhost:5173/feed?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`
+      `http://localhost:5173/feed?accessToken=${accessToken}&refreshToken=${refreshToken}`
     );
   } catch (error) {
-    console.error("❌ Google Authentication Failed:", error);
+    console.error("❌ Error in Google Auth Callback:", error);
     res.status(500).json({ message: "Google authentication failed" });
-  }
-};
-
-
-/**
- * 📌 Get User Profile
- */
-const getProfile = async (req: Request, res: Response) => {
-  try {
-    const user = await userModel
-      .findById(req.params.userId)
-      .select("-password -refreshToken");
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
-      return;
-    }
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
   }
 };
 
 /**
  * 📌 Update User Profile
  */
-const updateProfile = async (req: Request, res: Response) => {
+export const updateProfile = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const { username } = req.body;
-    const user = await userModel.findById(req.params.userId);
+    const { userFullName, country, dateOfBirth } = req.body;
+
+    if (!req.user) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const user = await User.findById((req.user as any)._id);
+
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
     }
 
-    if (username) user.userFullName = username;
+    // ✅ Update allowed fields only
+    if (userFullName) user.userFullName = userFullName;
+    if (country) user.country = country;
+    if (dateOfBirth) user.dateOfBirth = new Date(dateOfBirth);
+
+    // ❌ Disallow email/password updates
+    // (Ignore req.body.email and req.body.password)
+
     await user.save();
 
-    res.json({ message: "Profile updated successfully", user });
+    res.json({
+      message: "Profile updated successfully",
+      user: {
+        id: user._id,
+        userFullName: user.userFullName,
+        email: user.email, // Read-only
+        country: user.country,
+        dateOfBirth: user.dateOfBirth,
+        profileImage: user.profileImage,
+      },
+    });
   } catch (error) {
+    console.error("❌ Error updating profile:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-/**
- * 📌 Upload Profile Image
- */
-const uploadProfileImage = async (req: Request, res: Response) => {
+export const uploadProfileImage = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     if (!req.file) {
       res.status(400).json({ message: "No file uploaded" });
       return;
     }
 
+    // Construct relative path (e.g., /uploads/filename.jpg)
     const filePath = `/uploads/${req.file.filename}`;
-    const user = await userModel.findById(req.params.userId);
+
+    // Find user by token-based ID (middleware puts it on req.user)
+    const user = await User.findById((req.user as any)?._id);
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
     }
 
+    // Save file path to MongoDB
     user.profileImage = filePath;
-    await user.save();
+    await user.save(); // 🔥 Saves the new profile image path in the DB
 
-    res.json({ message: "Profile image updated", profileImage: filePath });
+    // Optionally construct full URL to send to frontend
+    const baseUrl = process.env.BASE_URL || "http://localhost:5000";
+    const fullUrl = `${baseUrl}${filePath}`;
+
+    res.json({
+      message: "Profile image updated successfully",
+      profileImage: fullUrl,
+    });
   } catch (error) {
+    console.error("❌ Error uploading profile image:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+export const getProfile = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+    const user = await User.findById((req.user as any).id).select(
+      "-password -refreshToken"
+    );
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    res.json(user);
+  } catch (error) {
+    console.error("❌ Error fetching profile:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-export default {
-  register,
-  login,
-  logout,
-  refresh,
-  googleAuthCallback,
-  getProfile,
-  updateProfile,
-  uploadProfileImage,
+export const getAllUsers = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const users = await User.find({ _id: { $ne: (req.user as any)?._id } }).select(
+      "userFullName profileImage"
+    );
+
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
 };

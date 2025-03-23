@@ -1,18 +1,17 @@
-import mongoose, { Schema, Model, Document } from "mongoose";
+import mongoose, { Schema, Model, Document, Types } from "mongoose";
 
-
-// Define User Interface
-interface IUser extends Document {
-  _id: string;
+export interface IUser extends Document {
+  _id: Types.ObjectId;
   userFullName: string;
   email: string;
   password?: string;
   profileImage?: string;
-  refreshToken?: string[]; // ✅ Changed to an array from second model
+  refreshToken?: string[];
   country: string;
   dateOfBirth: Date;
-  postsHistory: mongoose.Types.ObjectId[]; // ✅ Reference to posts
+  postsHistory: Types.ObjectId[];
 }
+
 
 // Define User Schema
 const userSchema: Schema = new Schema(
@@ -20,7 +19,11 @@ const userSchema: Schema = new Schema(
     userFullName: { type: String, required: false },
     email: { type: String, required: true, unique: true },
     password: { type: String },
-    profileImage: { type: String, default:"../../../Frontend/src/assets/man.png" },
+    profileImage: {
+      type: String,
+      default:
+        "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-173524.jpg",
+    },
     refreshToken: { type: [String], default: [] }, // ✅ Updated to an array
     dateOfBirth: { type: Date, default: new Date("2000-01-01") },
     country: { type: String, default: "Unknown" },

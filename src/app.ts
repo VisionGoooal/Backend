@@ -17,6 +17,8 @@ import predictionRoutes from "./routes/predictionRoutes";
 import postRoutes from "./routes/postRoutes";
 import commentRoutes from "./routes/commentRoutes";
 import chatRoutes from "./routes/chatRoutes";
+import userRoutes from "./routes/userRoutes";
+
 
 dotenv.config();
 const app: Express = express();
@@ -42,13 +44,21 @@ app.use(helmet());
 app.use(morgan("dev"));
 app.use(passport.initialize());
 
-// ✅ Serve Uploaded Images
-app.use("/uploads", express.static(uploadDir));
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Frontend URL
+    credentials: true,
+  })
+);
+
+// ✅ Serve static files from /uploads with proper CORS
+app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 
 // ✅ Multer Configuration (For File Uploads)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
+  filename: (req, file, cb) =>
+    cb(null, Date.now() + path.extname(file.originalname)),
 });
 export const upload = multer({ storage });
 
@@ -58,7 +68,7 @@ app.use("/api/prediction", predictionRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/chat", chatRoutes);
-
+app.use("/api/users", userRoutes); 
 
 // ✅ Connect to MongoDB before starting the app
 export default connectDB().then(() => app);
