@@ -157,6 +157,6 @@ router.delete("/:id", protect, postController.deleteItem);
  *       404:
  *         description: Post not found
  */
-router.patch("/:id/like", likePost);
+router.put("/:id/like", likePost);
 
 export = router;

@@ -178,6 +178,7 @@ Content-Type: application/json
     "image": "https://example.com/image.jpg"
 }
 
-### Get All Predictions
-GET http://localhost:5000/api/predictions
-Content-Type: application/json
+
+###
+
+POST http://localhost:5000/api/prediction

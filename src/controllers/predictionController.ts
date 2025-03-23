@@ -21,13 +21,15 @@ export const createPredictionsAutomatically = async () => {
     // Create a prompt for the upcoming matches
     const prompt = await createPromptForMatches();
 
+
     if (!prompt) {
       throw new Error('No prompt created');
     }
 
     // Generate predictions based on the prompt
     let gptResponseString = await generatePrediction(prompt);
-    console.log('Prediction received:', gptResponseString);
+
+
     gptResponseString = gptResponseString.trim()
     .replace(/^```json\s*\n|\n```$/g, '');
     const gptResponse = JSON.parse(gptResponseString);
