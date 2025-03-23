@@ -1,5 +1,5 @@
 import postModel, { IPost } from "../models/postModel";
-import base_controller from "./base_controller";
+import base_controller from "./baseController";
 import multer from "multer";
 import path from "path";
 

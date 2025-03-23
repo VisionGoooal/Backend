@@ -1,28 +1,183 @@
-###
+### 📌 Authentication Endpoints
 
-POST http://localhost:3000/post
+### Register a New User
+POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-    "title": "Hello",
-    "content": "Hello World...",
-    "owner": "ani",
-    "likes": 0
-    
+    "userFullName": "Roie Raz",
+    "email": "roiyraz8@gmail.com",
+    "password": "123456",
+    "country": "Israel",
+    "dateOfBirth": "2000-08-06"
 }
 
-###
-
-POST http://localhost:3000/comment
+### Login a User
+POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-    "title": "hear me out",
-    "content": "i dont agree with that at all",
-    "postId": "678862c55d71e830127181df",
-    "owner": "me"
-    
+    "email": "roiyraz8@gmail.com",
+    "password": "123456"
 }
 
-###
-POST http://localhost:3000/prediction
+### Refresh Access Token
+POST http://localhost:5000/api/auth/refresh
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2RjNDE5NDBlNzk0MTkxM2NjZWEwYjIiLCJyYW5kb20iOjY4NTM1MSwiaWF0IjoxNzQyNDg4MDAwLCJleHAiOjE3NDMwOTI4MDB9.ro9ykOHwmzKP-kqpxuAzHhxtD6pNDFoE6bPb2SrJJ4c"
+}
+
+### Logout a User
+POST http://localhost:5000/api/auth/logout
+Content-Type: application/json
+
+{
+    "refreshToken": "REFRESH_TOKEN_HERE"
+}
+
+### Get User Profile (Requires Authentication)
+GET http://localhost:5000/api/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2RjNDE5NDBlNzk0MTkxM2NjZWEwYjIiLCJyYW5kb20iOjk1NjQ0NCwiaWF0IjoxNzQyNDg4MDIwLCJleHAiOjE3NDI0ODgwMjN9.uYuscX2ShcoC6CCaST4gnk1zpo5Vgajv_9gbhSm4dl8
+
+### Update User Profile (Requires Authentication)
+PUT http://localhost:5000/api/auth/profile
+Authorization: Bearer ACCESS_TOKEN_HERE
+Content-Type: application/json
+
+{
+    "userFullName": "Johnathan Doe",
+    "country": "Canada"
+}
+
+### Upload Profile Image (Requires Authentication)
+POST http://localhost:5000/api/auth/profile/upload
+Authorization: Bearer ACCESS_TOKEN_HERE
+Content-Type: multipart/form-data; boundary=FormBoundary
+
+--FormBoundary
+Content-Disposition: form-data; name="profileImage"; filename="profile.jpg"
+Content-Type: image/jpeg
+
+< ./path/to/profile.jpg
+--FormBoundary--
+
+
+### 📌 Post Endpoints
+
+### Create a Post (Requires Authentication)
+POST http://localhost:5000/api/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2RjNDE5NDBlNzk0MTkxM2NjZWEwYjIiLCJyYW5kb20iOjYwMTA1NCwiaWF0IjoxNzQyNDg4MTU2LCJleHAiOjE3NDI0ODgxNTl9.J_Zx_lAe6tTe90HkJmT_lQSADSiQJdt6Kh5-rMwF3mw
+Content-Type: multipart/form-data; boundary=FormBoundary
+
+--FormBoundary
+Content-Disposition: form-data; name="content"
+
+This is a new post!
+--FormBoundary
+Content-Disposition: form-data; name="image"; filename="image.jpg"
+Content-Type: image/jpeg
+
+< ./path/to/image.jpg
+--FormBoundary--
+
+### Get All Posts
+GET http://localhost:5000/api/posts
+Content-Type: application/json
+
+### Get a Specific Post by ID
+GET http://localhost:5000/api/posts/POST_ID_HERE
+Content-Type: application/json
+
+### Update a Post (Requires Authentication)
+PUT http://localhost:5000/api/posts/POST_ID_HERE
+Authorization: Bearer ACCESS_TOKEN_HERE
+Content-Type: application/json
+
+{
+    "content": "Updated content..."
+}
+
+### Delete a Post (Requires Authentication)
+DELETE http://localhost:5000/api/posts/POST_ID_HERE
+Authorization: Bearer ACCESS_TOKEN_HERE
+Content-Type: application/json
+
+### Like a Post (Requires Authentication)
+PATCH http://localhost:5000/api/posts/POST_ID_HERE/like
+Authorization: Bearer ACCESS_TOKEN_HERE
+Content-Type: application/json
+
+
+### 📌 Comment Endpoints
+
+### Add a Comment to a Post (Requires Authentication)
+POST http://localhost:5000/api/comments/POST_ID_HERE
+Authorization: Bearer ACCESS_TOKEN_HERE
+Content-Type: application/json
+
+{
+    "content": "I don't agree with this post."
+}
+
+### Get Comments for a Specific Post
+GET http://localhost:5000/api/comments/POST_ID_HERE
+Content-Type: application/json
+
+### Update a Comment (Requires Authentication)
+PUT http://localhost:5000/api/comments/COMMENT_ID_HERE
+Authorization: Bearer ACCESS_TOKEN_HERE
+Content-Type: application/json
+
+{
+    "content": "This is my updated comment."
+}
+
+### Delete a Comment (Requires Authentication)
+DELETE http://localhost:5000/api/comments/COMMENT_ID_HERE
+Authorization: Bearer ACCESS_TOKEN_HERE
+Content-Type: application/json
+
+
+### 📌 Chat Endpoints
+
+### Send a Chat Message (Requires Authentication)
+POST http://localhost:5000/api/chat
+Authorization: Bearer ACCESS_TOKEN_HERE
+Content-Type: application/json
+
+{
+    "receiver": "RECEIVER_USER_ID",
+    "message": "Hello, how are you?"
+}
+
+### Get Chat Messages Between Two Users (Requires Authentication)
+GET http://localhost:5000/api/chat/USER_ID_HERE
+Authorization: Bearer ACCESS_TOKEN_HERE
+Content-Type: application/json
+
+
+### 📌 Prediction Endpoints
+
+### Generate Predictions Automatically
+POST http://localhost:5000/api/predictions
+Authorization: Bearer ACCESS_TOKEN_HERE
+Content-Type: application/json
+
+### Create a Post Based on Predictions
+POST http://localhost:5000/api/predictions/post
+Authorization: Bearer ACCESS_TOKEN_HERE
+Content-Type: application/json
+
+{
+    "title": "AI Match Prediction",
+    "content": "Today's prediction: Team A vs. Team B",
+    "owner": "ADMIN_USER_ID",
+    "likes": 0,
+    "image": "https://example.com/image.jpg"
+}
+
+### Get All Predictions
+GET http://localhost:5000/api/predictions
+Content-Type: application/json

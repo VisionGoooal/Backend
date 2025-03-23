@@ -13,21 +13,29 @@ class BaseController<T> {
   }
 
   getAll = async (req: Request, res: Response) => {
-    const ownerFilter = req.query.owner;
     try {
+      // Extract and properly format ownerFilter
+      const ownerFilter = req.query.owner;
+      let filter = {};
+  
       if (ownerFilter) {
-        const data = await this.model.find({ owner: ownerFilter });
-
-        res.status(200).send(data);
-      } else {
-        const data = await this.model.find();
-        res.status(200).send(data);
+        if (Array.isArray(ownerFilter)) {
+          filter = { owner: { $in: ownerFilter.map(String) } }; // Handle array of owners
+        } else {
+          filter = { owner: String(ownerFilter) }; // Ensure owner is a string
+        }
       }
+  
+      // Fetch data with or without the filter
+      const data = await this.model.find(filter);
+  
+      res.status(200).json(data);
     } catch (error) {
-      res.status(400).send(error);
+      console.error("Error fetching data:", error);
+      res.status(500).json({ message: "Server error", error: (error as Error).message });
     }
   };
-
+  
   createItem = async (req: Request, res: Response) => {
     const data = req.body;
     try {
