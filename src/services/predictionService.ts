@@ -4,7 +4,6 @@ import exp from 'constants';
 import predictionModel from '../models/predictionModel';
 
 
-
 export const generatePrediction = async (prompt: string): Promise<string> => {
   try {
 
@@ -154,7 +153,6 @@ export const createPromptForMatches = async (): Promise<string> => {
       
       Return the predictions in valid JSON format that exactly matches the IPrediction interface structure.`;
   
-      
       return prompt;
     }
 

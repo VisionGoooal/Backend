@@ -51,7 +51,7 @@ router.get("/:postId", getCommentsByPostId);
  *       201:
  *         description: Comment added successfully
  */
-router.post("/:postId", protect, BaseController.createItem);
+router.post("/:postId", BaseController.createItem);
 
 /**
  * @swagger
