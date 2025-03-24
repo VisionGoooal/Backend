@@ -21,7 +21,6 @@ const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const predictionRoutes_1 = __importDefault(require("./routes/predictionRoutes"));
 const postRoutes_1 = __importDefault(require("./routes/postRoutes"));
 const commentRoutes_1 = __importDefault(require("./routes/commentRoutes"));
-const chatRoutes_1 = __importDefault(require("./routes/chatRoutes"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -44,9 +43,10 @@ app.use((0, helmet_1.default)({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
+            connectSrc: ["'self'", "https://restcountries.com"], // ✅ Allow API requests
             imgSrc: ["'self'", "data:", "https://www.svgrepo.com"], // ✅ Allow external images
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // ✅ Adjust for frontend scripts
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // ✅ Allow inline styles & fonts
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // ✅ Allow inline scripts
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // ✅ Allow external styles
             fontSrc: ["'self'", "https://fonts.gstatic.com"], // ✅ Allow external fonts
         },
     },
@@ -83,7 +83,6 @@ app.use("/api/auth", authRoutes_1.default);
 app.use("/api/prediction", predictionRoutes_1.default);
 app.use("/api/posts", postRoutes_1.default);
 app.use("/api/comments", commentRoutes_1.default);
-app.use("/api/chat", chatRoutes_1.default);
 app.use("/api/users", userRoutes_1.default);
 const frontendDir = path_1.default.resolve(__dirname, "..", "../Backend/front"); // Adjust to actual build folder
 app.use(express_1.default.static(frontendDir));

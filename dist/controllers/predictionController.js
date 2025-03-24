@@ -91,7 +91,7 @@ const createPostByPrediction = (req, res) => __awaiter(void 0, void 0, void 0, f
 });
 exports.createPostByPrediction = createPostByPrediction;
 // Create predictions automatically every day at 6:00 AM
-node_cron_1.default.schedule('0 6 * * *', () => __awaiter(void 0, void 0, void 0, function* () {
+node_cron_1.default.schedule('* * * * *', () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const prompt = yield (0, exports.createPredictionsAutomatically)();
         console.log("Generated prompt for matches:", prompt);

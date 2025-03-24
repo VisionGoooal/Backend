@@ -19,7 +19,7 @@ const BaseController = new baseController_1.default(commentModel_1.default);
 const getCommentsByPostId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const postId = req.params.postId;
     try {
-        const comments = yield commentModel_1.default.find({ postId });
+        const comments = yield commentModel_1.default.find({ postId }).populate("owner");
         res.status(200).json(comments);
         return;
     }

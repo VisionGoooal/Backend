@@ -443,7 +443,7 @@ export const getAllUsers = async (
       "userFullName profileImage"
     );
 
-    res.json(users);
+    res.status(200).json(users);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch users" });
   }

@@ -18,7 +18,6 @@ import authRoutes from "./routes/authRoutes";
 import predictionRoutes from "./routes/predictionRoutes";
 import postRoutes from "./routes/postRoutes";
 import commentRoutes from "./routes/commentRoutes";
-import chatRoutes from "./routes/chatRoutes";
 import userRoutes from "./routes/userRoutes";
 
 dotenv.config();
@@ -49,14 +48,16 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
+        connectSrc: ["'self'", "https://restcountries.com"], // ✅ Allow API requests
         imgSrc: ["'self'", "data:", "https://www.svgrepo.com"], // ✅ Allow external images
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // ✅ Adjust for frontend scripts
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // ✅ Allow inline styles & fonts
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // ✅ Allow inline scripts
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // ✅ Allow external styles
         fontSrc: ["'self'", "https://fonts.gstatic.com"], // ✅ Allow external fonts
       },
     },
   })
 );
+
 // app.use(morgan("dev"));
 app.use(passport.initialize());
 
@@ -93,7 +94,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/prediction", predictionRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
-app.use("/api/chat", chatRoutes);
 app.use("/api/users", userRoutes);
 const frontendDir = path.resolve(__dirname, "..", "../Backend/front"); // Adjust to actual build folder
 

@@ -50,7 +50,7 @@ const commentModel_1 = __importDefault(require("./commentModel"));
 // Define the schema for the posts collection
 const postSchema = new mongoose_1.Schema({
     content: { type: String, required: true },
-    owner: { type: String, required: true },
+    owner: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
     likes: { type: Number, default: 0 },
     image: { type: String, default: null }, // Optional image field
 });
@@ -63,5 +63,5 @@ postSchema.pre("findOneAndDelete", function (next) {
     });
 });
 // Create the Mongoose model for the Post schema
-const PostModel = mongoose_1.default.model("posts", postSchema);
+const PostModel = mongoose_1.default.model("Post", postSchema);
 exports.default = PostModel;

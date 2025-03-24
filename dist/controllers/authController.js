@@ -359,7 +359,7 @@ const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     var _a;
     try {
         const users = yield userModel_1.default.find({ _id: { $ne: (_a = req.user) === null || _a === void 0 ? void 0 : _a._id } }).select("userFullName profileImage");
-        res.json(users);
+        res.status(200).json(users);
     }
     catch (err) {
         res.status(500).json({ message: "Failed to fetch users" });

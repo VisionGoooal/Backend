@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_1 = __importDefault(require("http"));
 const https_1 = __importDefault(require("https"));
-const socket_io_1 = require("socket.io");
 const node_cron_1 = __importDefault(require("node-cron"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const predictionController_1 = require("./controllers/predictionController");
@@ -28,8 +27,8 @@ app_1.default.then((app) => {
     if (process.env.NODE_ENV === "dev") {
         const server = http_1.default.createServer(app);
         server.listen(port, () => console.log(`🚀 Server running on port ${port} with Socket.io`));
-        const io = new socket_io_1.Server(server, { cors: { origin: "*" } });
-        (0, socket_1.socketHandler)(io);
+        // const io = new Server(server, { cors: { origin: "*" } });
+        (0, socket_1.initializeSocket)(server);
     }
     else {
         const prop = {
@@ -40,11 +39,9 @@ app_1.default.then((app) => {
         httpsServer.listen(port, '0.0.0.0', () => {
             console.log(`🚀 Server running on port ${port} with Socket.io`);
         });
-        const io = new socket_io_1.Server(httpsServer, { cors: { origin: "*" } });
-        (0, socket_1.socketHandler)(io);
+        // const io = new Server(httpsServer, { cors: { origin: "*" } });
+        (0, socket_1.initializeSocket)(httpsServer);
     }
-    // ✅ Initialize Socket.io
-    // ✅ Handle Socket.io connections in a separate file
     // ✅ Schedule AI Match Predictions (Every Day at 6 AM)
     node_cron_1.default.schedule("0 6 * * *", () => __awaiter(void 0, void 0, void 0, function* () {
         try {

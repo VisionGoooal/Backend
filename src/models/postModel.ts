@@ -25,6 +25,6 @@ postSchema.pre("findOneAndDelete", async function (next) {
 });
 
 // Create the Mongoose model for the Post schema
-const PostModel: Model<IPost> = mongoose.model<IPost>("posts", postSchema);
+const PostModel: Model<IPost> = mongoose.model<IPost>("Post", postSchema);
 
 export default PostModel;

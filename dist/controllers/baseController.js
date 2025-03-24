@@ -52,7 +52,7 @@ class BaseController {
         this.getDataById = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const dataId = req.params.id;
             try {
-                const data = yield this.model.findById(dataId);
+                const data = yield this.model.findById(dataId).populate("owner");
                 if (!data) {
                     console.log("data not found");
                     res.status(404).send("data not found");

@@ -37,8 +37,8 @@ const mongoose_1 = __importStar(require("mongoose"));
 // Define the schema
 const commentSchema = new mongoose_1.Schema({
     content: { type: String, required: true },
-    postId: { type: String, required: true },
-    owner: { type: String, required: true },
+    postId: { type: mongoose_1.Schema.Types.ObjectId, ref: "Post", required: true },
+    owner: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
 });
 // Create the model
 const CommentModel = mongoose_1.default.model("Comment", commentSchema);
