@@ -4,7 +4,7 @@ import commentModel from "./commentModel";
 // Define the interface for the Post document
 export interface IPost {
   content: string;
-  owner: string;
+  owner: { type: Schema.Types.ObjectId; ref: "User" };
   likes: number;
   image?: string; // Optional field for image
 }
@@ -12,7 +12,7 @@ export interface IPost {
 // Define the schema for the posts collection
 const postSchema: Schema = new Schema({
   content: { type: String, required: true },
-  owner: { type: String, required: true },
+  owner: { type: Schema.Types.ObjectId , ref : 'User', required: true },
   likes: { type: Number, default: 0 },
   image: { type: String, default: null }, // Optional image field
 });

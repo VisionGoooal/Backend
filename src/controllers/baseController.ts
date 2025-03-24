@@ -49,7 +49,8 @@ class BaseController<T> {
   getDataById = async (req: Request, res: Response) => {
     const dataId = req.params.id;
     try {
-      const data = await this.model.findById(dataId);
+      const data = await this.model.findById(dataId).populate("owner");
+      
       if (!data) {
         console.log("data not found");
 
