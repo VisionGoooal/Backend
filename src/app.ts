@@ -10,6 +10,8 @@ import path from "path";
 import fs from "fs";
 import connectDB from "./config/db";
 import "./config/passport"; // Google authentication
+import swaggerJsDoc from "swagger-jsdoc";
+import swaggerUI from "swagger-ui-express";
 
 // Import Routes
 import authRoutes from "./routes/authRoutes";
@@ -42,7 +44,19 @@ app.use(
   })
 );
 
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: ["'self'", "data:", "https://www.svgrepo.com"], // ✅ Allow external images
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // ✅ Adjust for frontend scripts
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // ✅ Allow inline styles & fonts
+        fontSrc: ["'self'", "https://fonts.gstatic.com"], // ✅ Allow external fonts
+      },
+    },
+  })
+);
 // app.use(morgan("dev"));
 app.use(passport.initialize());
 
@@ -59,7 +73,21 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + path.extname(file.originalname)),
 });
 export const upload = multer({ storage });
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Web Dev 2025 REST API",
+      version: "1.0.0",
+      description: "REST server including authentication using JWT",
+    },
+    servers: [{ url: "https://10.10.246.129", },{url : process.env.DOMAIN_URL}],
+  },
+  apis: ["./src/routes/*.ts"],
+};
+const specs = swaggerJsDoc(options);
 
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 // ✅ Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/prediction", predictionRoutes);
@@ -67,8 +95,13 @@ app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/users", userRoutes);
-app.use("*" , (req,res)=>{
-  res.sendFile(path.resolve(__dirname , '..' , '../front/index.html'))
-})
+const frontendDir = path.resolve(__dirname, "..", "../Backend/front"); // Adjust to actual build folder
+
+app.use(express.static(frontendDir)); 
+
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(frontendDir, "index.html"));
+});
+
 // ✅ Connect to MongoDB before starting the app
 export default connectDB().then(() => app);
