@@ -4,14 +4,14 @@ import mongoose, { Schema, Model } from "mongoose";
 export interface IComment {
   content: string;
   postId: string;
-  owner: string;
+  owner: { type: Schema.Types.ObjectId; ref: "User" };
 }
 
 // Define the schema
 const commentSchema: Schema = new Schema({
   content: { type: String, required: true },
   postId: { type: String, required: true },
-  owner: { type: String, required: true },
+  owner: { type: Schema.Types.ObjectId , ref : 'User', required: true },
 });
 
 // Create the model

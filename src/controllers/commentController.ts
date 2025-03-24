@@ -6,7 +6,7 @@ const BaseController = new base_controller<IComment>(CommentModel);
 export const getCommentsByPostId = async (req: any, res: any) => {
   const postId = req.params.postId;
   try {
-    const comments = await CommentModel.find({ postId });
+    const comments = await CommentModel.find({ postId }).populate("owner");
     res.status(200).json(comments);
     return;
   } catch (error) {
