@@ -35,7 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 // ✅ CORS setup
 app.use(
   cors({
-    origin: "http://localhost:5173", // ✅ Allow frontend origin
+    origin: "0.0.0.0", // ✅ Allow frontend origin
     credentials: true, // ✅ Allow sending cookies & auth headers
     methods: ["GET", "POST", "PUT", "DELETE"], // ✅ Allowed methods
     allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allowed headers
@@ -67,6 +67,8 @@ app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/users", userRoutes);
-
+app.use("*" , (req,res)=>{
+  res.sendFile(path.resolve(__dirname , '..' , '../front/index.html'))
+})
 // ✅ Connect to MongoDB before starting the app
 export default connectDB().then(() => app);

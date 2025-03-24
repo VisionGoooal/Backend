@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/server.ts"
+    "dev": "nodemon src/server.ts",
+    "prod" : "cp .env.prod .env && tsc -p tsconfig.prod.json && node ./dist/src/app.js",
+    "prodPm2" : "cp .env.prod .env && tsc -p tsconfig.prod.json && pm2 restart ecosystem.config.js --env production"
   },
   "keywords": [],
   "author": "",
