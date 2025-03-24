@@ -43,7 +43,7 @@ app.use(
 );
 
 app.use(helmet());
-app.use(morgan("dev"));
+// app.use(morgan("dev"));
 app.use(passport.initialize());
 
 // ✅ Serve static files from /uploads with proper CORS and Cross-Origin-Resource-Policy header
