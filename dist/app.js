@@ -8,12 +8,10 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
-const passport_1 = __importDefault(require("passport"));
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const db_1 = __importDefault(require("./config/db"));
-require("./config/passport"); // Google authentication
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 // Import Routes
@@ -34,59 +32,40 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 // ✅ CORS setup
 app.use((0, cors_1.default)({
-    origin: "0.0.0.0", // ✅ Allow frontend origin
-    credentials: true, // ✅ Allow sending cookies & auth headers
-    methods: ["GET", "POST", "PUT", "DELETE"], // ✅ Allowed methods
-    allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allowed headers
+    origin: "https://node129.cs.colman.ac.il",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 }));
-// app.use(
-//   helmet({
-//     contentSecurityPolicy: {
-//       directives: {
-//         defaultSrc: ["'self'"],
-//         connectSrc: ["'self'", "https://restcountries.com"], // ✅ Allow API requests
-//         imgSrc: ["'self'", "data:", "https://www.svgrepo.com"], // ✅ Allow external images
-//         scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // ✅ Allow inline scripts
-//         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // ✅ Allow external styles
-//         fontSrc: ["'self'", "https://fonts.gstatic.com"], // ✅ Allow external fonts
-//       },
-//     },
-//   })
-// );
-// app.use(
-//   helmet({
-//     contentSecurityPolicy: {
-//       directives: {
-//         defaultSrc: ["'self'"],
-//         connectSrc: ["'self'", "https://restcountries.com"],
-//         imgSrc: [
-//           "'self'",
-//           "data:",
-//           "blob:", // ✅ This line is essential
-//           "https://www.svgrepo.com",
-//           "https://img.freepik.com",
-//         ],
-//         scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-//         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-//         fontSrc: ["'self'", "https://fonts.gstatic.com"],
-//       },
-//     },
-//   })
-// );
 app.use((0, helmet_1.default)({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            connectSrc: ["'self'", "https://restcountries.com"],
+            connectSrc: [
+                "'self'",
+                "https://restcountries.com",
+                "https://accounts.google.com",
+                "https://oauth2.googleapis.com"
+            ],
             imgSrc: ["'self'", "blob:", "data:", "*"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            scriptSrc: [
+                "'self'",
+                "'unsafe-inline'",
+                "'unsafe-eval'",
+                "https://accounts.google.com",
+                "https://apis.google.com"
+            ],
+            styleSrc: [
+                "'self'",
+                "'unsafe-inline'",
+                "https://fonts.googleapis.com",
+                "https://accounts.google.com"
+            ],
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
+            frameSrc: ["'self'", "https://accounts.google.com"],
         },
     },
 }));
-// app.use(morgan("dev"));
-app.use(passport_1.default.initialize());
 // ✅ Serve static files from /uploads with proper CORS and Cross-Origin-Resource-Policy header
 app.use("/uploads", (req, res, next) => {
     res.setHeader('Cross-Origin-Resource-Policy', 'same-site'); // Add the header
@@ -103,13 +82,24 @@ const options = {
     definition: {
         openapi: "3.0.0",
         info: {
-            title: "Web Dev 2025 REST API",
+            title: "VisionGoal API",
             version: "1.0.0",
-            description: "REST server including authentication using JWT",
+            description: "REST API for VisionGoal app with authentication using JWT",
         },
-        servers: [{ url: "https://10.10.246.129", }, { url: process.env.DOMAIN_URL }],
+        servers: [
+            { url: "https://node129.cs.colman.ac.il" }, // או localhost אם בסביבה מקומית
+        ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: "http",
+                    scheme: "bearer",
+                    bearerFormat: "JWT",
+                },
+            },
+        },
     },
-    apis: ["./src/routes/*.ts"],
+    apis: ["./src/routes/*.ts"], // איפה הראוטים שלך מתועדים
 };
 const specs = (0, swagger_jsdoc_1.default)(options);
 app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(specs));

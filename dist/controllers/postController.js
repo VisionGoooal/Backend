@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPost = exports.likePost = void 0;
+exports.getPostsByUserId = exports.createPost = exports.likePost = void 0;
 const postModel_1 = __importDefault(require("../models/postModel"));
 const baseController_1 = __importDefault(require("./baseController"));
 const multer_1 = __importDefault(require("multer"));
@@ -77,4 +77,17 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.createPost = createPost;
+const getPostsByUserId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { userId } = req.params;
+        const posts = yield postModel_1.default.find({ author: userId }) // שים לב לשם השדה במודל שלך
+            .sort({ createdAt: -1 });
+        res.status(200).json(posts);
+    }
+    catch (error) {
+        console.error("❌ Error fetching posts by user:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+exports.getPostsByUserId = getPostsByUserId;
 exports.default = BaseController;

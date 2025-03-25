@@ -188,4 +188,5 @@ router.delete("/:id", authMiddleware_1.protect, postController_1.default.deleteI
  *         description: Post not found
  */
 router.put("/:id/like", authMiddleware_1.protect, postController_1.likePost);
+router.get("/user/:userId", postController_1.getPostsByUserId);
 module.exports = router;

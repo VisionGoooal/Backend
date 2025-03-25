@@ -36,7 +36,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 const express_1 = __importDefault(require("express"));
-const passport_1 = __importDefault(require("passport"));
 const multer_1 = __importDefault(require("multer"));
 const authMiddleware_1 = require("../middleware/authMiddleware");
 const authController = __importStar(require("../controllers/authController"));
@@ -60,8 +59,6 @@ router.post("/refresh", authController.refreshToken);
 router.get("/profile/:userId", authMiddleware_1.protect, authController.getProfile);
 router.put("/update-profile/:userId", authMiddleware_1.protect, authController.updateProfile);
 router.post("/upload-profile-image/:userId", authMiddleware_1.protect, upload.single("profileImage"), authController.uploadProfileImage);
-// Google Auth
-router.get("/google", passport_1.default.authenticate("google", { scope: ["email", "profile"] }));
-router.get("/google/callback", passport_1.default.authenticate("google", { session: false }), authController.googleAuthCallback);
+router.post('/googleAuth', authController.googleSignIn);
 router.get("/all-users", authMiddleware_1.protect, authController.getAllUsers);
 module.exports = router;

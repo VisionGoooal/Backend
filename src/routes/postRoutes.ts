@@ -1,6 +1,6 @@
 import express from "express";
 import { protect } from "../middleware/authMiddleware";
-import postController, { createPost, likePost } from "../controllers/postController";
+import postController, { createPost, likePost, getPostsByUserId } from "../controllers/postController";
 import multer from "multer";
 import path from "path";
 import app from "../app";
@@ -160,5 +160,8 @@ router.delete("/:id", protect, postController.deleteItem);
  *         description: Post not found
  */
 router.put("/:id/like",protect, likePost);
+
+router.get("/user/:userId", getPostsByUserId );
+
 
 export = router;

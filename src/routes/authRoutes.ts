@@ -33,17 +33,6 @@ router.post(
   authController.uploadProfileImage
 );
 
-
-// Google Auth
-// router.get(
-//   "/google",
-//   passport.authenticate("google", { scope: ["email", "profile"] })
-// );
-// router.get(
-//   "/google/callback",
-//   passport.authenticate("google", { session: false }),
-//   authController.googleAuthCallback
-// );
 router.post('/googleAuth', authController.googleSignIn);
 
 router.get("/all-users", protect, authController.getAllUsers);

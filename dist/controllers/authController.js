@@ -12,11 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllUsers = exports.getProfile = exports.uploadProfileImage = exports.updateProfile = exports.googleAuthCallback = exports.logout = exports.refreshToken = exports.login = exports.register = void 0;
+exports.getAllUsers = exports.getProfile = exports.uploadProfileImage = exports.updateProfile = exports.googleSignIn = exports.logout = exports.refreshToken = exports.login = exports.register = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 // @ts-ignore
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userModel_1 = __importDefault(require("../models/userModel"));
+const google_auth_library_1 = require("google-auth-library");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const client = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 /**
  * Generate Access Token
  */
@@ -221,46 +225,108 @@ const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.logout = logout;
-const googleAuthCallback = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const googleSignIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const googleUser = req.user;
-        console.log("🔍 Google User Data:", googleUser);
-        if (!googleUser || !googleUser.email) {
-            res.status(400).json({ message: "Google login failed" });
-            return;
+        const { credential } = req.body;
+        if (!credential) {
+            return res.status(400).json({ error: 'Missing Google credential' });
         }
-        let user = yield userModel_1.default.findOne({ email: googleUser.email });
+        // Verify the Google token
+        const ticket = yield client.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        if (!payload || !payload.email) {
+            return res.status(400).json({ error: 'Invalid Google token' });
+        }
+        const { email, picture, name } = payload;
+        // Check if user exists in the database
+        let user = yield userModel_1.default.findOne({ email });
         if (!user) {
-            const safeUserName = googleUser.displayName ||
-                googleUser.email.split("@")[0] ||
-                "GoogleUser";
-            user = new userModel_1.default({
-                userFullName: safeUserName,
-                email: googleUser.email,
-                profileImage: googleUser.picture ||
-                    "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-173524.jpg?t=st=1742145365~exp=1742148965~hmac=bd302071cdce6ac960ce3e2f8fee275629adf2d0ffcd7e26625d0175a2daf20a&w=740", // fallback image
-                refreshToken: [],
-                country: "Unknown",
-                dateOfBirth: new Date("2000-01-01"),
+            // Auto-register new user
+            user = yield userModel_1.default.create({
+                email,
+                profileImage: picture,
+                userFullName: name,
+                password: 'google-signin',
             });
-            yield user.save();
         }
-        const accessToken = jsonwebtoken_1.default.sign({ id: user._id }, process.env.JWT_SECRET || "default_secret", {
-            expiresIn: process.env.JWT_EXPIRES_IN || "1h",
-        });
-        const refreshToken = jsonwebtoken_1.default.sign({ id: user._id }, process.env.REFRESH_TOKEN_SECRET || "default_refresh_secret", {
-            expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || "7d",
-        });
+        // Generate JWT token
+        const accessToken = generateAccessToken(user._id.toString());
+        const refreshToken = generateRefreshToken(user._id.toString());
         user.refreshToken = [refreshToken];
         yield user.save();
-        res.redirect(`http://localhost:5173/feed?accessToken=${accessToken}&refreshToken=${refreshToken}`);
+        return res.status(200).json({
+            accessToken,
+            refreshToken,
+            user: {
+                id: user._id,
+                userFullName: user.userFullName, // ✅ עקבי
+                profileImage: user.profileImage,
+                email: user.email
+            }
+        });
     }
     catch (error) {
-        console.error("❌ Error in Google Auth Callback:", error);
-        res.status(500).json({ message: "Google authentication failed" });
+        console.error('Google sign-in error:', error);
+        return res.status(500).json({ error: 'Internal server error' });
     }
 });
-exports.googleAuthCallback = googleAuthCallback;
+exports.googleSignIn = googleSignIn;
+// export const googleAuthCallback = async (
+//   req: Request,
+//   res: Response
+// ): Promise<void> => {
+//   try {
+//     const googleUser = req.user as any;
+//     console.log("🔍 Google User Data:", googleUser);
+//     if (!googleUser || !googleUser.email) {
+//       res.status(400).json({ message: "Google login failed" });
+//       return;
+//     }
+//     let user = await User.findOne({ email: googleUser.email });
+//     if (!user) {
+//       const safeUserName =
+//         googleUser.displayName ||
+//         googleUser.email.split("@")[0] ||
+//         "GoogleUser";
+//       user = new User({
+//         userFullName: safeUserName,
+//         email: googleUser.email,
+//         profileImage:
+//           googleUser.picture ||
+//           "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-173524.jpg?t=st=1742145365~exp=1742148965~hmac=bd302071cdce6ac960ce3e2f8fee275629adf2d0ffcd7e26625d0175a2daf20a&w=740", // fallback image
+//         refreshToken: [],
+//         country: "Unknown",
+//         dateOfBirth: new Date("2000-01-01"),
+//       });
+//       await user.save();
+//     }
+//     const accessToken = jwt.sign(
+//       { id: user._id },
+//       process.env.JWT_SECRET || "default_secret",
+//       {
+//         expiresIn: process.env.JWT_EXPIRES_IN || "1h",
+//       } as jwt.SignOptions
+//     );
+//     const refreshToken = jwt.sign(
+//       { id: user._id },
+//       process.env.REFRESH_TOKEN_SECRET || "default_refresh_secret",
+//       {
+//         expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || "7d",
+//       } as jwt.SignOptions
+//     );
+//     user.refreshToken = [refreshToken];
+//     await user.save();
+//     res.redirect(
+//       `http://localhost:5173/feed?accessToken=${accessToken}&refreshToken=${refreshToken}`
+//     );
+//   } catch (error) {
+//     console.error("❌ Error in Google Auth Callback:", error);
+//     res.status(500).json({ message: "Google authentication failed" });
+//   }
+// };
 /**
  * 📌 Update User Profile
  */

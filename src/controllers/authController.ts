@@ -289,21 +289,29 @@ export const googleSignIn = async (req: Request, res: Response):Promise<any> => 
       user = await User.create({
         email,
         profileImage: picture,
-        name,
-        password: 'google-signin', // Placeholder password
+        userFullName: name, 
+        password: 'google-signin', 
       });
+      
     }
     // Generate JWT token
     const accessToken = generateAccessToken(user._id.toString());
     const refreshToken = generateRefreshToken(user._id.toString());
-    User.findByIdAndUpdate(user._id, { refreshToken });
+    user.refreshToken = [refreshToken];
+    await user.save();
 
-    return res.status(200).json({ accessToken,refreshToken, user:{
-      id : user._id,
-      name : user.userFullName,
-      profileImage : user.profileImage,
-      email : user.email
-    } });
+
+    return res.status(200).json({
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id,
+        userFullName: user.userFullName, // ✅ עקבי
+        profileImage: user.profileImage,
+        email: user.email
+      }
+    });
+    
   } catch (error) {
     console.error('Google sign-in error:', error);
     return res.status(500).json({ error: 'Internal server error' });

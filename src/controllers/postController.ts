@@ -1,5 +1,5 @@
-import e from "express";
 import postModel, { IPost } from "../models/postModel";
+import { Request, Response } from "express";
 import base_controller from "./baseController";
 import multer from "multer";
 import path from "path";
@@ -69,6 +69,20 @@ export const createPost = async (req: any, res: any) => {
   } catch (error) {
     console.error("Error saving post:", error);
     res.status(500).json({ message: "Error saving post - "+error });
+  }
+};
+
+export const getPostsByUserId = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { userId } = req.params;
+
+    const posts = await postModel.find({ author: userId }) // שים לב לשם השדה במודל שלך
+      .sort({ createdAt: -1 }); 
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("❌ Error fetching posts by user:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
