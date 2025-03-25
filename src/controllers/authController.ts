@@ -3,6 +3,10 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 // @ts-ignore
 import bcrypt from "bcryptjs";
 import User from "../models/userModel";
+import { OAuth2Client } from 'google-auth-library';
+import env from 'dotenv';
+env.config();
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 /**
  * Generate Access Token
@@ -261,69 +265,115 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const googleAuthCallback = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const googleSignIn = async (req: Request, res: Response):Promise<any> => {
   try {
-    const googleUser = req.user as any;
-
-    console.log("🔍 Google User Data:", googleUser);
-
-    if (!googleUser || !googleUser.email) {
-      res.status(400).json({ message: "Google login failed" });
-      return;
+    const { credential } = req.body;
+    if (!credential) {
+      return res.status(400).json({ error: 'Missing Google credential' });
     }
-
-    let user = await User.findOne({ email: googleUser.email });
+    // Verify the Google token
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      return res.status(400).json({ error: 'Invalid Google token' });
+    }
+    const { email, picture, name } = payload;
+    // Check if user exists in the database
+    let user = await User.findOne({ email });
 
     if (!user) {
-      const safeUserName =
-        googleUser.displayName ||
-        googleUser.email.split("@")[0] ||
-        "GoogleUser";
-
-      user = new User({
-        userFullName: safeUserName,
-        email: googleUser.email,
-        profileImage:
-          googleUser.picture ||
-          "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-173524.jpg?t=st=1742145365~exp=1742148965~hmac=bd302071cdce6ac960ce3e2f8fee275629adf2d0ffcd7e26625d0175a2daf20a&w=740", // fallback image
-        refreshToken: [],
-        country: "Unknown",
-        dateOfBirth: new Date("2000-01-01"),
+      // Auto-register new user
+      user = await User.create({
+        email,
+        profileImage: picture,
+        name,
+        password: 'google-signin', // Placeholder password
       });
-
-      await user.save();
     }
+    // Generate JWT token
+    const accessToken = generateAccessToken(user._id.toString());
+    const refreshToken = generateRefreshToken(user._id.toString());
+    User.findByIdAndUpdate(user._id, { refreshToken });
 
-    const accessToken = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET || "default_secret",
-      {
-        expiresIn: process.env.JWT_EXPIRES_IN || "1h",
-      } as jwt.SignOptions
-    );
-
-    const refreshToken = jwt.sign(
-      { id: user._id },
-      process.env.REFRESH_TOKEN_SECRET || "default_refresh_secret",
-      {
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || "7d",
-      } as jwt.SignOptions
-    );
-
-    user.refreshToken = [refreshToken];
-    await user.save();
-
-    res.redirect(
-      `http://localhost:5173/feed?accessToken=${accessToken}&refreshToken=${refreshToken}`
-    );
+    return res.status(200).json({ accessToken,refreshToken, user:{
+      id : user._id,
+      name : user.userFullName,
+      profileImage : user.profileImage,
+      email : user.email
+    } });
   } catch (error) {
-    console.error("❌ Error in Google Auth Callback:", error);
-    res.status(500).json({ message: "Google authentication failed" });
+    console.error('Google sign-in error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+
+// export const googleAuthCallback = async (
+//   req: Request,
+//   res: Response
+// ): Promise<void> => {
+//   try {
+//     const googleUser = req.user as any;
+
+//     console.log("🔍 Google User Data:", googleUser);
+
+//     if (!googleUser || !googleUser.email) {
+//       res.status(400).json({ message: "Google login failed" });
+//       return;
+//     }
+
+//     let user = await User.findOne({ email: googleUser.email });
+
+//     if (!user) {
+//       const safeUserName =
+//         googleUser.displayName ||
+//         googleUser.email.split("@")[0] ||
+//         "GoogleUser";
+
+//       user = new User({
+//         userFullName: safeUserName,
+//         email: googleUser.email,
+//         profileImage:
+//           googleUser.picture ||
+//           "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-173524.jpg?t=st=1742145365~exp=1742148965~hmac=bd302071cdce6ac960ce3e2f8fee275629adf2d0ffcd7e26625d0175a2daf20a&w=740", // fallback image
+//         refreshToken: [],
+//         country: "Unknown",
+//         dateOfBirth: new Date("2000-01-01"),
+//       });
+
+//       await user.save();
+//     }
+
+//     const accessToken = jwt.sign(
+//       { id: user._id },
+//       process.env.JWT_SECRET || "default_secret",
+//       {
+//         expiresIn: process.env.JWT_EXPIRES_IN || "1h",
+//       } as jwt.SignOptions
+//     );
+
+//     const refreshToken = jwt.sign(
+//       { id: user._id },
+//       process.env.REFRESH_TOKEN_SECRET || "default_refresh_secret",
+//       {
+//         expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || "7d",
+//       } as jwt.SignOptions
+//     );
+
+//     user.refreshToken = [refreshToken];
+//     await user.save();
+
+//     res.redirect(
+//       `http://localhost:5173/feed?accessToken=${accessToken}&refreshToken=${refreshToken}`
+//     );
+//   } catch (error) {
+//     console.error("❌ Error in Google Auth Callback:", error);
+//     res.status(500).json({ message: "Google authentication failed" });
+//   }
+// };
 
 /**
  * 📌 Update User Profile
