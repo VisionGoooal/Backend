@@ -10,6 +10,47 @@ const commentController_2 = require("../controllers/commentController");
 const router = express_1.default.Router();
 /**
  * @swagger
+ * tags:
+ *   name: Comments
+ *   description: Comment operations on posts
+ */
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Comment:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         content:
+ *           type: string
+ *         owner:
+ *           type: string
+ *         post:
+ *           type: string
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *       example:
+ *         _id: "comment123"
+ *         content: "Great post!"
+ *         owner: "user123"
+ *         post: "post456"
+ *         createdAt: "2024-03-25T12:00:00Z"
+
+ *     CommentInput:
+ *       type: object
+ *       required:
+ *         - content
+ *       properties:
+ *         content:
+ *           type: string
+ *       example:
+ *         content: "Nice one!"
+ */
+/**
+ * @swagger
  * /api/comments/{postId}:
  *   get:
  *     summary: Get comments for a specific post
@@ -23,6 +64,12 @@ const router = express_1.default.Router();
  *     responses:
  *       200:
  *         description: List of comments for the post
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Comment'
  */
 router.get("/:postId", commentController_2.getCommentsByPostId);
 /**
@@ -44,10 +91,7 @@ router.get("/:postId", commentController_2.getCommentsByPostId);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               content:
- *                 type: string
+ *             $ref: '#/components/schemas/CommentInput'
  *     responses:
  *       201:
  *         description: Comment added successfully
@@ -72,10 +116,7 @@ router.post("/:postId", commentController_2.createComment);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               content:
- *                 type: string
+ *             $ref: '#/components/schemas/CommentInput'
  *     responses:
  *       200:
  *         description: Comment updated successfully

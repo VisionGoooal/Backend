@@ -49,9 +49,10 @@ const mongoose_1 = __importStar(require("mongoose"));
 const commentModel_1 = __importDefault(require("./commentModel"));
 // Define the schema for the posts collection
 const postSchema = new mongoose_1.Schema({
+    title: { type: String, default: "" }, // ← הוספנו title לסכימה
     content: { type: String, required: true },
-    owner: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
-    likes: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'User' }],
+    owner: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true },
+    likes: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "User" }],
     image: { type: String, default: null }, // Optional image field
 });
 // Pre-remove hook to delete associated comments when a post is deleted

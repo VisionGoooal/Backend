@@ -32,7 +32,7 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 // ✅ CORS setup
 app.use((0, cors_1.default)({
-    origin: "https://node129.cs.colman.ac.il",
+    origin: true, // ✅ יאפשר את כל origins שמגיעים עם בקשה תקינה כולל Swagger
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

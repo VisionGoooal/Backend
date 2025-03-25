@@ -32,12 +32,13 @@ app.use(express.urlencoded({ extended: true }));
 // ✅ CORS setup
 app.use(
   cors({
-    origin:  "https://node129.cs.colman.ac.il",  
-    credentials: true, 
-    methods: ["GET", "POST", "PUT", "DELETE"], 
-    allowedHeaders: ["Content-Type", "Authorization"], 
+    origin: true, // ✅ יאפשר את כל origins שמגיעים עם בקשה תקינה כולל Swagger
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 app.use(
   helmet({
     contentSecurityPolicy: {
