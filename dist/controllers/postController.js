@@ -35,7 +35,13 @@ const likePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (!post) {
             return res.status(404).json({ message: "Post not found" });
         }
-        post.likes += 1;
+        console.log(post.likes, req.user.id);
+        if (post.likes.includes(req.user.id)) {
+            post.likes.splice(post.likes.indexOf(req.user.id), 1);
+        }
+        else {
+            post.likes.push(req.user.id);
+        }
         yield post.save();
         res.status(200).json({ likes: post.likes });
     }
@@ -48,24 +54,26 @@ const likePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.likePost = likePost;
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { title, content, owner } = req.body;
+    const { content, owner } = req.body;
     let imageUrl = null;
     if (req.file) {
-        imageUrl = `/uploads/${req.file.filename}`;
+        const baseUrl = `${req.protocol}://${req.get("host")}`;
+        imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
     }
+    console.log("Creating a post in model");
     const newPost = new postModel_1.default({
-        title,
         content,
         owner,
         image: imageUrl,
     });
     try {
         yield newPost.save();
+        console.log(imageUrl);
         res.status(201).json(newPost);
     }
     catch (error) {
         console.error("Error saving post:", error);
-        res.status(500).json({ message: "Error saving post" });
+        res.status(500).json({ message: "Error saving post - " + error });
     }
 });
 exports.createPost = createPost;

@@ -39,15 +39,49 @@ app.use((0, cors_1.default)({
     methods: ["GET", "POST", "PUT", "DELETE"], // ✅ Allowed methods
     allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allowed headers
 }));
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'"],
+//         connectSrc: ["'self'", "https://restcountries.com"], // ✅ Allow API requests
+//         imgSrc: ["'self'", "data:", "https://www.svgrepo.com"], // ✅ Allow external images
+//         scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // ✅ Allow inline scripts
+//         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // ✅ Allow external styles
+//         fontSrc: ["'self'", "https://fonts.gstatic.com"], // ✅ Allow external fonts
+//       },
+//     },
+//   })
+// );
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'"],
+//         connectSrc: ["'self'", "https://restcountries.com"],
+//         imgSrc: [
+//           "'self'",
+//           "data:",
+//           "blob:", // ✅ This line is essential
+//           "https://www.svgrepo.com",
+//           "https://img.freepik.com",
+//         ],
+//         scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+//         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+//         fontSrc: ["'self'", "https://fonts.gstatic.com"],
+//       },
+//     },
+//   })
+// );
 app.use((0, helmet_1.default)({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            connectSrc: ["'self'", "https://restcountries.com"], // ✅ Allow API requests
-            imgSrc: ["'self'", "data:", "https://www.svgrepo.com"], // ✅ Allow external images
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // ✅ Allow inline scripts
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // ✅ Allow external styles
-            fontSrc: ["'self'", "https://fonts.gstatic.com"], // ✅ Allow external fonts
+            connectSrc: ["'self'", "https://restcountries.com"],
+            imgSrc: ["'self'", "blob:", "data:", "*"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
         },
     },
 }));
@@ -58,6 +92,7 @@ app.use("/uploads", (req, res, next) => {
     res.setHeader('Cross-Origin-Resource-Policy', 'same-site'); // Add the header
     next();
 }, express_1.default.static(path_1.default.join(__dirname, "..", "uploads")));
+console.log("serving files from " + path_1.default.join(__dirname, "..", "uploads"));
 // ✅ Multer Configuration (For File Uploads)
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => cb(null, uploadDir),

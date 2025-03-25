@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCommentsByPostId = void 0;
+exports.createComment = exports.getCommentsByPostId = void 0;
 const commentModel_1 = __importDefault(require("../models/commentModel"));
 const baseController_1 = __importDefault(require("./baseController"));
 const BaseController = new baseController_1.default(commentModel_1.default);
@@ -33,4 +33,18 @@ const getCommentsByPostId = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.getCommentsByPostId = getCommentsByPostId;
+const createComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = req.body;
+    try {
+        const newComment = yield commentModel_1.default.create(data);
+        // Populate the 'owner' field after creation
+        const populatedComment = yield newComment.populate("owner");
+        res.status(201).send(populatedComment);
+    }
+    catch (error) {
+        console.error("Error creating comment:", error);
+        res.status(400).send({ error: "Failed to create comment" });
+    }
+});
+exports.createComment = createComment;
 exports.default = BaseController;

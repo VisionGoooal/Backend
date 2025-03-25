@@ -347,7 +347,7 @@ const getProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             res.status(404).json({ message: "User not found" });
             return;
         }
-        res.json(user);
+        res.status(200).json(user);
     }
     catch (error) {
         console.error("❌ Error fetching profile:", error);

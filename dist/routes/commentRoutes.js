@@ -52,7 +52,7 @@ router.get("/:postId", commentController_2.getCommentsByPostId);
  *       201:
  *         description: Comment added successfully
  */
-router.post("/:postId", commentController_1.default.createItem);
+router.post("/:postId", commentController_2.createComment);
 /**
  * @swagger
  * /api/comments/{id}:

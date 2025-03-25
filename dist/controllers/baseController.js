@@ -66,10 +66,18 @@ class BaseController {
         });
         this.updateItem = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const itemId = req.params.id;
+            console.log(req.body);
             try {
                 const item = yield this.model.findByIdAndUpdate(itemId, req.body, {
                     new: true,
                 });
+                // Check if it's a Post model and populate
+                if (this.model.modelName === "Post" && item) {
+                    yield item.populate([
+                        { path: "owner" }
+                    ]);
+                }
+                console.log(item);
                 res.status(200).send(item);
             }
             catch (error) {

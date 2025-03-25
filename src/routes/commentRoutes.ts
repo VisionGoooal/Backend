@@ -1,7 +1,7 @@
 import express from "express";
 import { protect } from "../middleware/authMiddleware";
 import BaseController from "../controllers/commentController";
-import { getCommentsByPostId } from "../controllers/commentController";
+import { getCommentsByPostId ,createComment } from "../controllers/commentController";
 
 const router = express.Router();
 
@@ -51,7 +51,7 @@ router.get("/:postId", getCommentsByPostId);
  *       201:
  *         description: Comment added successfully
  */
-router.post("/:postId", BaseController.createItem);
+router.post("/:postId", createComment);
 
 /**
  * @swagger

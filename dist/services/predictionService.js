@@ -32,7 +32,7 @@ const generatePrediction = (prompt) => __awaiter(void 0, void 0, void 0, functio
                 { role: "user", content: prompt }, // The prompt to generate a prediction
             ],
         });
-        console.log("Response from API:", response);
+        // console.log("Response from API:", response);
         if (!response.choices || !response.choices[0].message) {
             throw new Error("No valid response from API");
         }
@@ -52,7 +52,7 @@ const deleteAllPredictions = () => __awaiter(void 0, void 0, void 0, function* (
     try {
         // Delete all predictions from the database
         yield predictionModel_1.default.deleteMany();
-        console.log("Yesterday predictions deleted successfully");
+        // console.log("Yesterday predictions deleted successfully");
         return;
     }
     catch (error) {

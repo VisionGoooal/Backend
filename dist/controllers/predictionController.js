@@ -42,7 +42,7 @@ const createPredictionsAutomatically = () => __awaiter(void 0, void 0, void 0, f
         gptResponseString = gptResponseString.trim()
             .replace(/^```json\s*\n|\n```$/g, '');
         const gptResponse = JSON.parse(gptResponseString);
-        console.log('Prediction received:', gptResponse);
+        // console.log('Prediction received:', gptResponse);
         if (!gptResponse) {
             throw new Error('No prediction received');
         }
@@ -59,7 +59,7 @@ const createPredictionsAutomatically = () => __awaiter(void 0, void 0, void 0, f
                 };
                 // Save the prediction to the database
                 yield predictionModel_1.default.create(predictionData);
-                console.log('Predictions successfully created');
+                // console.log('Predictions successfully created');
             }
             catch (error) {
                 console.error('Error creating predictions:', error);
@@ -94,7 +94,7 @@ exports.createPostByPrediction = createPostByPrediction;
 node_cron_1.default.schedule('* * * * *', () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const prompt = yield (0, exports.createPredictionsAutomatically)();
-        console.log("Generated prompt for matches:", prompt);
+        // console.log("Generated prompt for matches:", prompt);
     }
     catch (error) {
         console.error("Error generating prompt:", error);

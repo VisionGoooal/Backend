@@ -1,3 +1,4 @@
+import e from "express";
 import postModel, { IPost } from "../models/postModel";
 import base_controller from "./baseController";
 import multer from "multer";
@@ -26,8 +27,15 @@ export const likePost = async (req: any, res: any) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
+    console.log(post.likes , req.user.id)
 
-    post.likes += 1;
+    if(post.likes.includes(req.user.id)){
+      post.likes.splice(post.likes.indexOf(req.user.id) ,1)
+    }else{
+      post.likes.push(req.user.id)
+
+    }
+
     await post.save();
 
     res.status(200).json({ likes: post.likes });
@@ -40,15 +48,15 @@ export const likePost = async (req: any, res: any) => {
 };
 
 export const createPost = async (req: any, res: any) => {
-  const { title, content, owner } = req.body;
+  const { content, owner } = req.body;
   let imageUrl = null;
 
   if (req.file) {
-    imageUrl = `/uploads/${req.file.filename}`;
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+  imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
   }
-
+  console.log("Creating a post in model")
   const newPost = new postModel({
-    title,
     content,
     owner,
     image: imageUrl,
@@ -56,10 +64,11 @@ export const createPost = async (req: any, res: any) => {
 
   try {
     await newPost.save();
+    console.log(imageUrl)
     res.status(201).json(newPost);
   } catch (error) {
     console.error("Error saving post:", error);
-    res.status(500).json({ message: "Error saving post" });
+    res.status(500).json({ message: "Error saving post - "+error });
   }
 };
 

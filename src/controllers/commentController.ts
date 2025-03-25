@@ -18,4 +18,20 @@ export const getCommentsByPostId = async (req: any, res: any) => {
   }
 };
 
+export const createComment = async (req: any, res: any) => {
+  const data = req.body;
+
+  try {
+    const newComment = await CommentModel.create(data);
+
+    // Populate the 'owner' field after creation
+    const populatedComment = await newComment.populate("owner");
+
+    res.status(201).send(populatedComment);
+  } catch (error) {
+    console.error("Error creating comment:", error);
+    res.status(400).send({ error: "Failed to create comment" });
+  }
+};
+
 export default BaseController;

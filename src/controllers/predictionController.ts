@@ -34,7 +34,7 @@ export const createPredictionsAutomatically = async () => {
     .replace(/^```json\s*\n|\n```$/g, '');
     const gptResponse = JSON.parse(gptResponseString);
 
-    console.log('Prediction received:', gptResponse);
+    // console.log('Prediction received:', gptResponse);
 
     if (!gptResponse) {
       throw new Error('No prediction received');
@@ -56,7 +56,7 @@ export const createPredictionsAutomatically = async () => {
           // Save the prediction to the database
           await predictionModel.create(predictionData)
           
-          console.log('Predictions successfully created');
+          // console.log('Predictions successfully created');
         } catch (error) {
             console.error('Error creating predictions:', error);
              }
@@ -91,7 +91,7 @@ export const createPostByPrediction = async (req: any, res: any) => {
 cron.schedule('* * * * *', async () => {
   try {
     const prompt = await createPredictionsAutomatically();
-    console.log("Generated prompt for matches:", prompt);
+    // console.log("Generated prompt for matches:", prompt);
   } catch (error) {
     console.error("Error generating prompt:", error);
   }

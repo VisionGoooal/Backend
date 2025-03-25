@@ -43,6 +43,7 @@ const path_1 = __importDefault(require("path"));
 const uploadDir = path_1.default.join(__dirname, "..", "..", "uploads"); // Adjusted to go two levels up
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
+        console.log("Saving files to directory : " + uploadDir);
         cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
@@ -112,6 +113,7 @@ router.post("/", upload.single("image"), postController_1.createPost);
  *         description: Post not found
  */
 router.get("/:id", postController_1.default.getDataById);
+router.use(authMiddleware_1.protect);
 /**
  * @swagger
  * /api/posts/{id}:
@@ -143,7 +145,7 @@ router.get("/:id", postController_1.default.getDataById);
  *       404:
  *         description: Post not found
  */
-router.put("/:id", authMiddleware_1.protect, postController_1.default.updateItem);
+router.put("/:id", upload.single("image"), postController_1.default.updateItem);
 /**
  * @swagger
  * /api/posts/{id}:
@@ -185,5 +187,5 @@ router.delete("/:id", authMiddleware_1.protect, postController_1.default.deleteI
  *       404:
  *         description: Post not found
  */
-router.put("/:id/like", postController_1.likePost);
+router.put("/:id/like", authMiddleware_1.protect, postController_1.likePost);
 module.exports = router;

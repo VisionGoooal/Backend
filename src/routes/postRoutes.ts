@@ -3,10 +3,12 @@ import { protect } from "../middleware/authMiddleware";
 import postController, { createPost, likePost } from "../controllers/postController";
 import multer from "multer";
 import path from "path";
+import app from "../app";
 
 const uploadDir = path.join(__dirname, "..", "..", "uploads"); // Adjusted to go two levels up
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    console.log("Saving files to directory : " + uploadDir)
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
@@ -81,7 +83,7 @@ router.post("/", upload.single("image"), createPost);
  *         description: Post not found
  */
 router.get("/:id", postController.getDataById);
-
+router.use(protect)
 /**
  * @swagger
  * /api/posts/{id}:
@@ -113,7 +115,7 @@ router.get("/:id", postController.getDataById);
  *       404:
  *         description: Post not found
  */
-router.put("/:id", protect, postController.updateItem);
+router.put("/:id", upload.single("image"), postController.updateItem);
 
 /**
  * @swagger
@@ -157,6 +159,6 @@ router.delete("/:id", protect, postController.deleteItem);
  *       404:
  *         description: Post not found
  */
-router.put("/:id/like", likePost);
+router.put("/:id/like",protect, likePost);
 
 export = router;

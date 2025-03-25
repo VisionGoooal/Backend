@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { Model } from "mongoose";
 import commentsModel from "../models/commentModel";
+import { Document } from "mongoose";
+
 
 class BaseController<T> {
   likePost(arg0: string, likePost: any) {
@@ -65,10 +67,17 @@ class BaseController<T> {
 
   updateItem = async (req: Request, res: Response) => {
     const itemId = req.params.id;
+    console.log(req.body)
     try {
       const item = await this.model.findByIdAndUpdate(itemId, req.body, {
         new: true,
       });
+       // Check if it's a Post model and populate
+    if (this.model.modelName === "Post" && item) {
+      await (item as Document).populate([
+    { path: "owner" }  ]);
+    }
+      console.log(item)
       res.status(200).send(item);
     } catch (error) {
       res.status(400).send(error);

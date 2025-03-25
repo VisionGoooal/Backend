@@ -23,7 +23,7 @@ export const generatePrediction = async (prompt: string): Promise<string> => {
     });
 
 
-    console.log("Response from API:", response);
+    // console.log("Response from API:", response);
 
     if (!response.choices || !response.choices[0].message) {
       throw new Error("No valid response from API");
@@ -45,7 +45,7 @@ export const deleteAllPredictions = async () => {
   try {
     // Delete all predictions from the database
     await predictionModel.deleteMany();
-    console.log("Yesterday predictions deleted successfully");
+    // console.log("Yesterday predictions deleted successfully");
     return;
   } catch (error) {
     console.error("Error deleting predictions:", error);
