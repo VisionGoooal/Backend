@@ -79,7 +79,7 @@ exports.createPost = createPost;
 const getPostsByUserId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { userId } = req.params;
-        const posts = yield postModel_1.default.find({ author: userId }) // שים לב לשם השדה במודל שלך
+        const posts = yield postModel_1.default.find({ owner: userId }) // שים לב לשם השדה במודל שלך
             .sort({ createdAt: -1 });
         res.status(200).json(posts);
     }

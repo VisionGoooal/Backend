@@ -1,13 +1,14 @@
 import express, { Express } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import helmet from "helmet";
+import mongoose from 'mongoose';
 import multer from "multer";
 import path from "path";
 import fs from "fs";
 import connectDB from "./config/db";
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
+import * as http from 'http';
 
 // Import Routes
 import authRoutes from "./routes/authRoutes";
@@ -29,48 +30,19 @@ if (!fs.existsSync(uploadDir)) {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 // ✅ CORS setup
 app.use(
   cors({
-    origin: true, // ✅ יאפשר את כל origins שמגיעים עם בקשה תקינה כולל Swagger
+    origin: [
+      "https://node129.cs.colman.ac.il",
+      "https://accounts.google.com"
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        connectSrc: [
-          "'self'",
-          "https://restcountries.com",
-          "https://accounts.google.com",
-          "https://oauth2.googleapis.com"
-        ],
-        imgSrc: ["'self'", "blob:", "data:", "*"],
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "'unsafe-eval'",
-          "https://accounts.google.com",
-          "https://apis.google.com"
-        ],
-        styleSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "https://fonts.googleapis.com",
-          "https://accounts.google.com" 
-        ],        
-        fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        frameSrc: ["'self'", "https://accounts.google.com"],
-      },
-    },
-  })
-);
-
 
 // ✅ Serve static files from /uploads with proper CORS and Cross-Origin-Resource-Policy header
 app.use("/uploads", (req, res, next) => {
@@ -126,6 +98,25 @@ app.use(express.static(frontendDir));
 app.get("/*", (req, res) => {
   res.sendFile(path.join(frontendDir, "index.html"));
 });
+
+const server = http.createServer(app); 
+
+export const initApp = () => {
+  return new Promise<{app : Express , server : http.Server}>((resolve, reject) => {
+    if (!process.env.MONGO_URI) {
+      reject("MONGODB_URI is not defined in .env file");
+    } else {
+      mongoose
+        .connect(process.env.MONGO_URI)
+        .then(() => {
+          resolve({app,server});
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    }
+  });
+};
 
 // ✅ Connect to MongoDB before starting the app
 export default connectDB().then(() => app);

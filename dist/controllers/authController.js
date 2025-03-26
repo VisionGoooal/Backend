@@ -274,59 +274,6 @@ const googleSignIn = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.googleSignIn = googleSignIn;
-// export const googleAuthCallback = async (
-//   req: Request,
-//   res: Response
-// ): Promise<void> => {
-//   try {
-//     const googleUser = req.user as any;
-//     console.log("🔍 Google User Data:", googleUser);
-//     if (!googleUser || !googleUser.email) {
-//       res.status(400).json({ message: "Google login failed" });
-//       return;
-//     }
-//     let user = await User.findOne({ email: googleUser.email });
-//     if (!user) {
-//       const safeUserName =
-//         googleUser.displayName ||
-//         googleUser.email.split("@")[0] ||
-//         "GoogleUser";
-//       user = new User({
-//         userFullName: safeUserName,
-//         email: googleUser.email,
-//         profileImage:
-//           googleUser.picture ||
-//           "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-173524.jpg?t=st=1742145365~exp=1742148965~hmac=bd302071cdce6ac960ce3e2f8fee275629adf2d0ffcd7e26625d0175a2daf20a&w=740", // fallback image
-//         refreshToken: [],
-//         country: "Unknown",
-//         dateOfBirth: new Date("2000-01-01"),
-//       });
-//       await user.save();
-//     }
-//     const accessToken = jwt.sign(
-//       { id: user._id },
-//       process.env.JWT_SECRET || "default_secret",
-//       {
-//         expiresIn: process.env.JWT_EXPIRES_IN || "1h",
-//       } as jwt.SignOptions
-//     );
-//     const refreshToken = jwt.sign(
-//       { id: user._id },
-//       process.env.REFRESH_TOKEN_SECRET || "default_refresh_secret",
-//       {
-//         expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || "7d",
-//       } as jwt.SignOptions
-//     );
-//     user.refreshToken = [refreshToken];
-//     await user.save();
-//     res.redirect(
-//       `http://localhost:5173/feed?accessToken=${accessToken}&refreshToken=${refreshToken}`
-//     );
-//   } catch (error) {
-//     console.error("❌ Error in Google Auth Callback:", error);
-//     res.status(500).json({ message: "Google authentication failed" });
-//   }
-// };
 /**
  * 📌 Update User Profile
  */

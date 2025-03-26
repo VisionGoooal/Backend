@@ -74,7 +74,7 @@ export const getPostsByUserId = async (req: Request, res: Response): Promise<voi
   try {
     const { userId } = req.params;
 
-    const posts = await postModel.find({ author: userId }) // שים לב לשם השדה במודל שלך
+    const posts = await postModel.find({ owner: userId }) // שים לב לשם השדה במודל שלך
       .sort({ createdAt: -1 }); 
 
     res.status(200).json(posts);
