@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">52% </span>
+                <span class="strong">30% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>26/50</span>
+                <span class='fraction'>15/50</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.5% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/8</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/8</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">27.27% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>22/44</span>
+                <span class='fraction'>12/44</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -196,28 +196,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -283,28 +283,28 @@ export const likePost = <span class="fstat-no" title="function not covered" >asy
   }
 };
 &nbsp;
-export const createPost = async (req: any, res: any) =&gt; {
-  const { content } = req.body;
-  const owner = req.user<span class="branch-0 cbranch-no" title="branch not covered" >?.i</span>d; 
-  let imageUrl = null;
+export const createPost = <span class="fstat-no" title="function not covered" >async (r</span>eq: any, res: any) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+  const { content } = <span class="cstat-no" title="statement not covered" >req.body;</span>
+  const owner = <span class="cstat-no" title="statement not covered" >req.user?.id; </span>
+  let imageUrl = <span class="cstat-no" title="statement not covered" >null;</span>
 &nbsp;
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (req.file) {
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (req.file) {</span>
     const baseUrl = <span class="cstat-no" title="statement not covered" >`${req.protocol}://${req.get("host")}`;</span>
 <span class="cstat-no" title="statement not covered" >    imageUrl = `${baseUrl}/uploads/${req.file.filename}`;</span>
   }
 &nbsp;
-  const newPost = new postModel({
+  const newPost = <span class="cstat-no" title="statement not covered" >new postModel({</span>
     content,
     owner,
     image: imageUrl,
   });
 &nbsp;
-  try {
-    await newPost.save();
-    res.status(201).json(newPost);
+<span class="cstat-no" title="statement not covered" >  try {</span>
+<span class="cstat-no" title="statement not covered" >    await newPost.save();</span>
+<span class="cstat-no" title="statement not covered" >    res.status(201).json(newPost);</span>
   } catch (error) {
-    console.error("Error saving post:", error);
-    res.status(500).json({ message: "Error saving post - " + error });
+<span class="cstat-no" title="statement not covered" >    console.error("Error saving post:", error);</span>
+<span class="cstat-no" title="statement not covered" >    res.status(500).json({ message: "Error saving post - " + error });</span>
   }
 };
 &nbsp;
@@ -331,7 +331,7 @@ export default BaseController;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-03-26T13:30:35.828Z
+                at 2025-03-26T22:00:06.353Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
