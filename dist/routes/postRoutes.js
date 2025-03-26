@@ -40,7 +40,7 @@ const authMiddleware_1 = require("../middleware/authMiddleware");
 const postController_1 = __importStar(require("../controllers/postController"));
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
-const uploadDir = path_1.default.join(__dirname, "..", "..", "uploads"); // Adjusted to go two levels up
+const uploadDir = path_1.default.join(__dirname, "..", "..", "uploads");
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
         console.log("Saving files to directory : " + uploadDir);
@@ -60,14 +60,60 @@ const router = express_1.default.Router();
  */
 /**
  * @swagger
- * /api/posts:
- *   get:
- *     summary: Get all posts
- *     tags: [Posts]
- *     responses:
- *       200:
- *         description: List of all posts
+ * components:
+ *   schemas:
+ *     Post:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         content:
+ *           type: string
+ *         image:
+ *           type: string
+ *         owner:
+ *           type: string
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *       example:
+ *         _id: "123abc"
+ *         content: "This is a post"
+ *         image: "uploads/image.jpg"
+ *         owner: "user123"
+ *         createdAt: "2024-01-01T00:00:00Z"
+ *         updatedAt: "2024-01-01T00:00:00Z"
+
+ *     PostInput:
+ *       type: object
+ *       properties:
+ *         content:
+ *           type: string
+ *         image:
+ *           type: string
+ *           format: binary
+ *       required:
+ *         - content
  */
+/**
+* @swagger
+* /api/posts:
+*   get:
+*     summary: Get all posts
+*     tags: [Posts]
+*     responses:
+*       200:
+*         description: List of all posts
+*         content:
+*           application/json:
+*             schema:
+*               type: array
+*               items:
+*                 $ref: '#/components/schemas/Post'
+*/
 router.get("/", postController_1.default.getAll);
 /**
  * @swagger
@@ -93,7 +139,7 @@ router.get("/", postController_1.default.getAll);
  *       201:
  *         description: Post created successfully
  */
-router.post("/", upload.single("image"), postController_1.createPost);
+router.post("/", authMiddleware_1.protect, upload.single("image"), postController_1.createPost);
 /**
  * @swagger
  * /api/posts/{id}:
@@ -109,6 +155,10 @@ router.post("/", upload.single("image"), postController_1.createPost);
  *     responses:
  *       200:
  *         description: Post retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Post'
  *       404:
  *         description: Post not found
  */
@@ -129,14 +179,11 @@ router.use(authMiddleware_1.protect);
  *         schema:
  *           type: string
  *     requestBody:
- *       required: true
+ *       required: false
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             type: object
- *             properties:
- *               content:
- *                 type: string
+ *             $ref: '#/components/schemas/PostInput'
  *     responses:
  *       200:
  *         description: Post updated successfully
@@ -170,7 +217,7 @@ router.delete("/:id", authMiddleware_1.protect, postController_1.default.deleteI
 /**
  * @swagger
  * /api/posts/{id}/like:
- *   patch:
+ *   put:
  *     summary: Like a post
  *     tags: [Posts]
  *     security:
@@ -188,5 +235,27 @@ router.delete("/:id", authMiddleware_1.protect, postController_1.default.deleteI
  *         description: Post not found
  */
 router.put("/:id/like", authMiddleware_1.protect, postController_1.likePost);
+/**
+ * @swagger
+ * /api/posts/user/{userId}:
+ *   get:
+ *     summary: Get all posts by a specific user
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of posts by user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Post'
+ */
 router.get("/user/:userId", postController_1.getPostsByUserId);
 module.exports = router;

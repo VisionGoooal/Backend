@@ -27,13 +27,10 @@ export const likePost = async (req: any, res: any) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-    console.log(post.likes , req.user.id)
-
     if(post.likes.includes(req.user.id)){
       post.likes.splice(post.likes.indexOf(req.user.id) ,1)
     }else{
       post.likes.push(req.user.id)
-
     }
 
     await post.save();
@@ -48,14 +45,15 @@ export const likePost = async (req: any, res: any) => {
 };
 
 export const createPost = async (req: any, res: any) => {
-  const { content, owner } = req.body;
+  const { content } = req.body;
+  const owner = req.user?.id; 
   let imageUrl = null;
 
   if (req.file) {
     const baseUrl = `${req.protocol}://${req.get("host")}`;
-  imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
+    imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
   }
-  console.log("Creating a post in model")
+
   const newPost = new postModel({
     content,
     owner,
@@ -64,19 +62,19 @@ export const createPost = async (req: any, res: any) => {
 
   try {
     await newPost.save();
-    console.log(imageUrl)
     res.status(201).json(newPost);
   } catch (error) {
     console.error("Error saving post:", error);
-    res.status(500).json({ message: "Error saving post - "+error });
+    res.status(500).json({ message: "Error saving post - " + error });
   }
 };
+
 
 export const getPostsByUserId = async (req: Request, res: Response): Promise<void> => {
   try {
     const { userId } = req.params;
 
-    const posts = await postModel.find({ author: userId }) // שים לב לשם השדה במודל שלך
+    const posts = await postModel.find({ owner: userId }) // שים לב לשם השדה במודל שלך
       .sort({ createdAt: -1 }); 
 
     res.status(200).json(posts);

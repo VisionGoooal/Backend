@@ -35,7 +35,6 @@ const likePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (!post) {
             return res.status(404).json({ message: "Post not found" });
         }
-        console.log(post.likes, req.user.id);
         if (post.likes.includes(req.user.id)) {
             post.likes.splice(post.likes.indexOf(req.user.id), 1);
         }
@@ -54,13 +53,14 @@ const likePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.likePost = likePost;
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { content, owner } = req.body;
+    var _a;
+    const { content } = req.body;
+    const owner = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
     let imageUrl = null;
     if (req.file) {
         const baseUrl = `${req.protocol}://${req.get("host")}`;
         imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
     }
-    console.log("Creating a post in model");
     const newPost = new postModel_1.default({
         content,
         owner,
@@ -68,7 +68,6 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     });
     try {
         yield newPost.save();
-        console.log(imageUrl);
         res.status(201).json(newPost);
     }
     catch (error) {
@@ -80,7 +79,7 @@ exports.createPost = createPost;
 const getPostsByUserId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { userId } = req.params;
-        const posts = yield postModel_1.default.find({ author: userId }) // שים לב לשם השדה במודל שלך
+        const posts = yield postModel_1.default.find({ owner: userId }) // שים לב לשם השדה במודל שלך
             .sort({ createdAt: -1 });
         res.status(200).json(posts);
     }

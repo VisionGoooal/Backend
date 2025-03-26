@@ -3,6 +3,7 @@ import commentModel from "./commentModel";
 
 // Define the interface for the Post document
 export interface IPost {
+  title?: string; // ← הוספנו title כאופציונלי
   content: string;
   owner: { type: Schema.Types.ObjectId; ref: "User" };
   likes: [{ type: Schema.Types.ObjectId; ref: "User" }];
@@ -11,9 +12,10 @@ export interface IPost {
 
 // Define the schema for the posts collection
 const postSchema: Schema = new Schema({
+  title: { type: String, default: "" }, // ← הוספנו title לסכימה
   content: { type: String, required: true },
-  owner: { type: Schema.Types.ObjectId , ref : 'User', required: true },
-  likes: [{ type: Schema.Types.ObjectId , ref : 'User'}],
+  owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
   image: { type: String, default: null }, // Optional image field
 });
 
