@@ -29,7 +29,7 @@ class BaseController<T> {
       }
   
       // Fetch data with or without the filter
-      const data = await this.model.find(filter);
+      const data = await this.model.find(filter).populate("owner");;
   
       res.status(200).json(data);
     } catch (error) {

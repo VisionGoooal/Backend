@@ -4,6 +4,13 @@ import base_controller from "./baseController";
 import multer from "multer";
 import path from "path";
 
+interface GetPostsRequest extends Request {
+  query: {
+    page?: string;
+    limit?: string;
+    userId?: string;
+  };
+}
 const uploadDir = path.join(__dirname, "..", "..", "uploads");
 
 const storage = multer.diskStorage({
@@ -83,5 +90,30 @@ export const getPostsByUserId = async (req: Request, res: Response): Promise<voi
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+export const getAllPosts = async (req: GetPostsRequest, res: Response): Promise<void> => {
+
+  try {
+    const page = parseInt(req.query.page || '1');
+    const limit = parseInt(req.query.limit || '10');
+
+    const posts = await postModel.find()
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate('owner', '_id userFullName profileImage')
+    const total = await postModel.countDocuments();
+
+    res.status(200).json({
+      posts,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalPosts: total
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching posts', error });
+  }
+}
 
 export default BaseController;

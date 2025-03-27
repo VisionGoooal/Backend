@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPostsByUserId = exports.createPost = exports.likePost = void 0;
+exports.getAllPosts = exports.getPostsByUserId = exports.createPost = exports.likePost = void 0;
 const postModel_1 = __importDefault(require("../models/postModel"));
 const baseController_1 = __importDefault(require("./baseController"));
 const multer_1 = __importDefault(require("multer"));
@@ -89,4 +89,26 @@ const getPostsByUserId = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getPostsByUserId = getPostsByUserId;
+const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const page = parseInt(req.query.page || '1');
+        const limit = parseInt(req.query.limit || '10');
+        const posts = yield postModel_1.default.find()
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .populate('owner', '_id userFullName profileImage');
+        const total = yield postModel_1.default.countDocuments();
+        res.status(200).json({
+            posts,
+            currentPage: page,
+            totalPages: Math.ceil(total / limit),
+            totalPosts: total
+        });
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Error fetching posts', error });
+    }
+});
+exports.getAllPosts = getAllPosts;
 exports.default = BaseController;
