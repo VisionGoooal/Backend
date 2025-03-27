@@ -7,6 +7,8 @@
     "test": "jest --detectOpenHandles --forceExit",
     "testAuth": "jest src/tests/auth.test.ts --detectOpenHandles --forceExit",
     "testPost": "jest src/tests/post.test.ts --detectOpenHandles --forceExit",
+    "testUser": "jest src/tests/user.test.ts --detectOpenHandles --forceExit",
+    "testComment": "jest src/tests/comment.test.ts --detectOpenHandles --forceExit",
     "dev": "nodemon src/server.ts",
     "prod": "cp .env.prod .env && tsc -p tsconfig.prod.json && node ./dist/server.js",
     "prodPm2": "cp .env.prod .env && tsc -p tsconfig.prod.json && pm2 restart ecosystem.config.js --env production"

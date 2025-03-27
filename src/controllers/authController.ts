@@ -51,20 +51,21 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     if (
       !userFullName ||
       !email ||
-      !password ||
-      !confirmPassword ||
-      !country ||
-      !dateOfBirth
+      !password 
+      // ||
+      // !confirmPassword ||
+      // !country ||
+      // !dateOfBirth
     ) {
       res.status(400).json({ message: "All fields are required" });
       return;
     }
 
     // 🔹 Password match check
-    if (password !== confirmPassword) {
-      res.status(400).json({ message: "Passwords do not match" });
-      return;
-    }
+    // if (password !== confirmPassword) {
+    //   res.status(400).json({ message: "Passwords do not match" });
+    //   return;
+    // }
 
     // 🔹 Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -80,13 +81,13 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const dob = new Date(dateOfBirth);
-    const today = new Date();
+    // const dob = new Date(dateOfBirth);
+    // const today = new Date();
 
-    if (dob >= today) {
-      res.status(400).json({ message: "Invalid date of birth" });
-      return;
-    }
+    // if (dob >= today) {
+    //   res.status(400).json({ message: "Invalid date of birth" });
+    //   return;
+    // }
 
     // 🔹 Hash password securely
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -168,7 +169,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     await user.save();
 
     // 🔹 Respond with user data and tokens
-    res.json({
+    res.status(200).json({
       message: "Login successful",
       accessToken,
       refreshToken,
@@ -433,8 +434,8 @@ export const getAllUsers = async (
   res: Response
 ): Promise<void> => {
   try {
-    const users = await User.find({ _id: { $ne: (req.user as any)?._id } }).select(
-      "userFullName profileImage"
+    const users = await User.find({}).select(
+      "userFullName profileImage email "
     );
 
     res.status(200).json(users);

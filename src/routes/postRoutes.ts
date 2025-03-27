@@ -3,7 +3,8 @@ import { protect } from "../middleware/authMiddleware";
 import postController, {
   createPost,
   likePost,
-  getPostsByUserId
+  getPostsByUserId,
+  getAllPosts
 } from "../controllers/postController";
 import multer from "multer";
 import path from "path";
@@ -87,7 +88,7 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Post'
  */
-router.get("/", postController.getAll);
+router.get("/", getAllPosts);
 
 /**
  * @swagger

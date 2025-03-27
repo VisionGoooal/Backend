@@ -114,7 +114,7 @@ const router = express_1.default.Router();
 *               items:
 *                 $ref: '#/components/schemas/Post'
 */
-router.get("/", postController_1.default.getAll);
+router.get("/", postController_1.getAllPosts);
 /**
  * @swagger
  * /api/posts:
