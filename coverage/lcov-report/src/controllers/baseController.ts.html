@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">44.82% </span>
+                <span class="strong">13.79% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>26/58</span>
+                <span class='fraction'>8/58</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">44.44% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>4/9</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">41.66% </span>
+                <span class="strong">8.33% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/12</span>
+                <span class='fraction'>1/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">45.28% </span>
+                <span class="strong">15.09% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>24/53</span>
+                <span class='fraction'>8/53</span>
             </div>
         
             
@@ -221,37 +221,37 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -310,7 +310,7 @@ class BaseController&lt;T&gt; {
       }
   
       // Fetch data with or without the filter
-      const data = <span class="cstat-no" title="statement not covered" >await this.model.find(filter);</span>
+      const data = <span class="cstat-no" title="statement not covered" >await this.model.find(filter).populate("owner");</span>;
   
 <span class="cstat-no" title="statement not covered" >      res.status(200).json(data);</span>
     } catch (error) {
@@ -329,37 +329,37 @@ class BaseController&lt;T&gt; {
     }
   };
 &nbsp;
-  getDataById = async (req: Request, res: Response) =&gt; {
-    const dataId = req.params.id;
-    try {
-      const data = await this.model.findById(dataId).populate("owner");
+  getDataById = <span class="fstat-no" title="function not covered" >async (r</span>eq: Request, res: Response) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+    const dataId = <span class="cstat-no" title="statement not covered" >req.params.id;</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const data = <span class="cstat-no" title="statement not covered" >await this.model.findById(dataId).populate("owner");</span>
       
-      if (!data) {
-        console.log("data not found");
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!data) {</span>
+<span class="cstat-no" title="statement not covered" >        console.log("data not found");</span>
 &nbsp;
-         res.status(404).send("data not found");
-         return
+<span class="cstat-no" title="statement not covered" >         res.status(404).send("data not found");</span>
+<span class="cstat-no" title="statement not covered" >         return</span>
       }
-      res.status(200).send(data);
+<span class="cstat-no" title="statement not covered" >      res.status(200).send(data);</span>
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      res.status(400).send(error);</span>
     }
   };
 &nbsp;
-  updateItem = async (req: Request, res: Response) =&gt; {
-    const itemId = req.params.id;
-    console.log(req.body)
-    try {
-      const item = await this.model.findByIdAndUpdate(itemId, req.body, {
+  updateItem = <span class="fstat-no" title="function not covered" >async (r</span>eq: Request, res: Response) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
+    const itemId = <span class="cstat-no" title="statement not covered" >req.params.id;</span>
+<span class="cstat-no" title="statement not covered" >    console.log(req.body)</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const item = <span class="cstat-no" title="statement not covered" >await this.model.findByIdAndUpdate(itemId, req.body, {</span>
         new: true,
       });
        // Check if it's a Post model and populate
-    if (this.model.modelName === "Post" &amp;&amp; item) {
-      await (item as Document).populate([
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.model.modelName === "Post" &amp;&amp; item) {</span>
+<span class="cstat-no" title="statement not covered" >      await (item as Document).populate([</span>
     { path: "owner" }  ]);
     }
-      console.log(item)
-      res.status(200).send(item);
+<span class="cstat-no" title="statement not covered" >      console.log(item)</span>
+<span class="cstat-no" title="statement not covered" >      res.status(200).send(item);</span>
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      res.status(400).send(error);</span>
     }
@@ -394,7 +394,7 @@ export = BaseController;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-03-26T13:30:35.828Z
+                at 2025-03-27T17:26:10.075Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

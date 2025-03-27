@@ -51,20 +51,21 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     if (
       !userFullName ||
       !email ||
-      !password ||
-      !confirmPassword ||
-      !country ||
-      !dateOfBirth
+      !password 
+      // ||
+      // !confirmPassword ||
+      // !country ||
+      // !dateOfBirth
     ) {
       res.status(400).json({ message: "All fields are required" });
       return;
     }
 
     // 🔹 Password match check
-    if (password !== confirmPassword) {
-      res.status(400).json({ message: "Passwords do not match" });
-      return;
-    }
+    // if (password !== confirmPassword) {
+    //   res.status(400).json({ message: "Passwords do not match" });
+    //   return;
+    // }
 
     // 🔹 Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -434,7 +435,7 @@ export const getAllUsers = async (
 ): Promise<void> => {
   try {
     const users = await User.find({ _id: { $ne: (req.user as any)?._id } }).select(
-      "userFullName profileImage"
+      "userFullName profileImage email "
     );
 
     res.status(200).json(users);
