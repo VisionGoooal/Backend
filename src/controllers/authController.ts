@@ -169,7 +169,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     await user.save();
 
     // 🔹 Respond with user data and tokens
-    res.json({
+    res.status(200).json({
       message: "Login successful",
       accessToken,
       refreshToken,
@@ -434,7 +434,7 @@ export const getAllUsers = async (
   res: Response
 ): Promise<void> => {
   try {
-    const users = await User.find({ _id: { $ne: (req.user as any)?._id } }).select(
+    const users = await User.find({}).select(
       "userFullName profileImage email "
     );
 

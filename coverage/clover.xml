@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1743096486566" clover="3.2.0">
-  <project timestamp="1743096486566" name="All files">
-    <metrics statements="542" coveredstatements="245" conditionals="107" coveredconditionals="22" methods="82" coveredmethods="20" elements="731" coveredelements="287" complexity="0" loc="542" ncloc="542" packages="7" files="18" classes="18"/>
+<coverage generated="1743097940430" clover="3.2.0">
+  <project timestamp="1743097940430" name="All files">
+    <metrics statements="542" coveredstatements="243" conditionals="103" coveredconditionals="18" methods="82" coveredmethods="19" elements="727" coveredelements="280" complexity="0" loc="542" ncloc="542" packages="7" files="18" classes="18"/>
     <package name="src">
-      <metrics statements="53" coveredstatements="46" conditionals="3" coveredconditionals="1" methods="9" coveredmethods="5"/>
+      <metrics statements="53" coveredstatements="45" conditionals="3" coveredconditionals="1" methods="9" coveredmethods="4"/>
       <file name="app.ts" path="/home/st111/VisionGoalServer/Backend/src/app.ts">
-        <metrics statements="53" coveredstatements="46" conditionals="3" coveredconditionals="1" methods="9" coveredmethods="5"/>
+        <metrics statements="53" coveredstatements="45" conditionals="3" coveredconditionals="1" methods="9" coveredmethods="4"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -49,7 +49,7 @@
         <line num="94" count="1" type="stmt"/>
         <line num="96" count="1" type="stmt"/>
         <line num="98" count="1" type="stmt"/>
-        <line num="99" count="3" type="stmt"/>
+        <line num="99" count="0" type="stmt"/>
         <line num="102" count="1" type="stmt"/>
         <line num="104" count="1" type="stmt"/>
         <line num="105" count="1" type="stmt"/>
@@ -81,9 +81,9 @@
       </file>
     </package>
     <package name="src.controllers">
-      <metrics statements="330" coveredstatements="95" conditionals="74" coveredconditionals="15" methods="54" coveredmethods="11"/>
+      <metrics statements="330" coveredstatements="92" conditionals="70" coveredconditionals="9" methods="54" coveredmethods="11"/>
       <file name="authController.ts" path="/home/st111/VisionGoalServer/Backend/src/controllers/authController.ts">
-        <metrics statements="164" coveredstatements="50" conditionals="49" coveredconditionals="12" methods="20" coveredmethods="8"/>
+        <metrics statements="164" coveredstatements="56" conditionals="45" coveredconditionals="9" methods="20" coveredmethods="10"/>
         <line num="2" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
         <line num="5" count="1" type="stmt"/>
@@ -92,9 +92,9 @@
         <line num="8" count="1" type="stmt"/>
         <line num="9" count="1" type="stmt"/>
         <line num="14" count="1" type="stmt"/>
-        <line num="15" count="6" type="stmt"/>
+        <line num="15" count="7" type="stmt"/>
         <line num="25" count="1" type="stmt"/>
-        <line num="26" count="6" type="stmt"/>
+        <line num="26" count="7" type="stmt"/>
         <line num="39" count="3" type="stmt"/>
         <line num="40" count="3" type="stmt"/>
         <line num="48" count="3" type="stmt"/>
@@ -117,28 +117,28 @@
         <line num="113" count="3" type="stmt"/>
         <line num="126" count="0" type="stmt"/>
         <line num="127" count="0" type="stmt"/>
-        <line num="134" count="3" type="stmt"/>
-        <line num="135" count="3" type="stmt"/>
-        <line num="136" count="3" type="stmt"/>
-        <line num="139" count="3" type="cond" truecount="2" falsecount="1"/>
+        <line num="134" count="4" type="stmt"/>
+        <line num="135" count="4" type="stmt"/>
+        <line num="136" count="4" type="stmt"/>
+        <line num="139" count="4" type="cond" truecount="2" falsecount="1"/>
         <line num="140" count="0" type="stmt"/>
         <line num="141" count="0" type="stmt"/>
-        <line num="145" count="3" type="stmt"/>
-        <line num="146" count="3" type="cond" truecount="0" falsecount="1"/>
+        <line num="145" count="4" type="stmt"/>
+        <line num="146" count="4" type="cond" truecount="0" falsecount="1"/>
         <line num="147" count="0" type="stmt"/>
         <line num="148" count="0" type="stmt"/>
-        <line num="152" count="3" type="cond" truecount="0" falsecount="1"/>
+        <line num="152" count="4" type="cond" truecount="0" falsecount="1"/>
         <line num="153" count="0" type="stmt"/>
         <line num="154" count="0" type="stmt"/>
-        <line num="157" count="3" type="stmt"/>
-        <line num="158" count="3" type="cond" truecount="0" falsecount="1"/>
+        <line num="157" count="4" type="stmt"/>
+        <line num="158" count="4" type="cond" truecount="0" falsecount="1"/>
         <line num="159" count="0" type="stmt"/>
         <line num="160" count="0" type="stmt"/>
-        <line num="164" count="3" type="stmt"/>
-        <line num="165" count="3" type="stmt"/>
-        <line num="168" count="3" type="stmt"/>
-        <line num="169" count="3" type="stmt"/>
-        <line num="172" count="3" type="stmt"/>
+        <line num="164" count="4" type="stmt"/>
+        <line num="165" count="4" type="stmt"/>
+        <line num="168" count="4" type="stmt"/>
+        <line num="169" count="4" type="stmt"/>
+        <line num="172" count="4" type="stmt"/>
         <line num="186" count="0" type="stmt"/>
         <line num="187" count="0" type="stmt"/>
         <line num="194" count="1" type="stmt"/>
@@ -230,22 +230,22 @@
         <line num="405" count="0" type="stmt"/>
         <line num="406" count="0" type="stmt"/>
         <line num="409" count="1" type="stmt"/>
-        <line num="412" count="0" type="stmt"/>
-        <line num="413" count="0" type="stmt"/>
-        <line num="414" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="412" count="1" type="stmt"/>
+        <line num="413" count="1" type="stmt"/>
+        <line num="414" count="1" type="cond" truecount="0" falsecount="1"/>
         <line num="415" count="0" type="stmt"/>
         <line num="416" count="0" type="stmt"/>
-        <line num="418" count="0" type="stmt"/>
-        <line num="421" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="418" count="1" type="stmt"/>
+        <line num="421" count="1" type="cond" truecount="0" falsecount="1"/>
         <line num="422" count="0" type="stmt"/>
         <line num="423" count="0" type="stmt"/>
-        <line num="425" count="0" type="stmt"/>
+        <line num="425" count="1" type="stmt"/>
         <line num="427" count="0" type="stmt"/>
         <line num="428" count="0" type="stmt"/>
         <line num="432" count="1" type="stmt"/>
         <line num="435" count="1" type="stmt"/>
         <line num="436" count="1" type="stmt"/>
-        <line num="437" count="1" type="cond" truecount="3" falsecount="1"/>
+        <line num="437" count="1" type="stmt"/>
         <line num="441" count="1" type="stmt"/>
         <line num="443" count="0" type="stmt"/>
       </file>
@@ -330,7 +330,7 @@
         <line num="37" count="1" type="stmt"/>
       </file>
       <file name="postController.ts" path="/home/st111/VisionGoalServer/Backend/src/controllers/postController.ts">
-        <metrics statements="52" coveredstatements="22" conditionals="12" coveredconditionals="3" methods="10" coveredmethods="2"/>
+        <metrics statements="52" coveredstatements="13" conditionals="12" coveredconditionals="0" methods="10" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
@@ -354,19 +354,19 @@
         <line num="45" count="0" type="stmt"/>
         <line num="47" count="0" type="stmt"/>
         <line num="48" count="0" type="stmt"/>
-        <line num="54" count="9" type="stmt"/>
-        <line num="55" count="9" type="stmt"/>
-        <line num="56" count="9" type="cond" truecount="3" falsecount="1"/>
-        <line num="57" count="9" type="stmt"/>
-        <line num="59" count="9" type="cond" truecount="0" falsecount="1"/>
+        <line num="54" count="1" type="stmt"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="56" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="57" count="0" type="stmt"/>
+        <line num="59" count="0" type="cond" truecount="0" falsecount="1"/>
         <line num="60" count="0" type="stmt"/>
         <line num="61" count="0" type="stmt"/>
-        <line num="64" count="9" type="stmt"/>
-        <line num="70" count="9" type="stmt"/>
-        <line num="71" count="9" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
         <line num="72" count="0" type="stmt"/>
-        <line num="74" count="9" type="stmt"/>
-        <line num="75" count="9" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
         <line num="80" count="1" type="stmt"/>
         <line num="81" count="0" type="stmt"/>
         <line num="82" count="0" type="stmt"/>
@@ -429,24 +429,24 @@
       </file>
     </package>
     <package name="src.middleware">
-      <metrics statements="17" coveredstatements="11" conditionals="8" coveredconditionals="4" methods="2" coveredmethods="2"/>
+      <metrics statements="17" coveredstatements="13" conditionals="8" coveredconditionals="6" methods="2" coveredmethods="2"/>
       <file name="authMiddleware.ts" path="/home/st111/VisionGoalServer/Backend/src/middleware/authMiddleware.ts">
-        <metrics statements="17" coveredstatements="11" conditionals="8" coveredconditionals="4" methods="2" coveredmethods="2"/>
+        <metrics statements="17" coveredstatements="13" conditionals="8" coveredconditionals="6" methods="2" coveredmethods="2"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
-        <line num="5" count="10" type="stmt"/>
-        <line num="6" count="10" type="stmt"/>
-        <line num="7" count="10" type="cond" truecount="3" falsecount="1"/>
-        <line num="9" count="10" type="cond" truecount="0" falsecount="1"/>
-        <line num="10" count="0" type="stmt"/>
-        <line num="11" count="0" type="stmt"/>
-        <line num="13" count="10" type="stmt"/>
-        <line num="14" count="10" type="stmt"/>
-        <line num="15" count="10" type="cond" truecount="1" falsecount="1"/>
-        <line num="17" count="10" type="cond" truecount="0" falsecount="1"/>
+        <line num="5" count="3" type="stmt"/>
+        <line num="6" count="3" type="stmt"/>
+        <line num="7" count="3" type="cond" truecount="4" falsecount="0"/>
+        <line num="9" count="3" type="cond" truecount="1" falsecount="0"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="15" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="17" count="2" type="cond" truecount="0" falsecount="1"/>
         <line num="18" count="0" type="stmt"/>
         <line num="19" count="0" type="stmt"/>
-        <line num="22" count="10" type="stmt"/>
+        <line num="22" count="2" type="stmt"/>
         <line num="24" count="0" type="stmt"/>
         <line num="25" count="0" type="stmt"/>
       </file>
