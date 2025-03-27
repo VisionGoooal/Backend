@@ -81,13 +81,13 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const dob = new Date(dateOfBirth);
-    const today = new Date();
+    // const dob = new Date(dateOfBirth);
+    // const today = new Date();
 
-    if (dob >= today) {
-      res.status(400).json({ message: "Invalid date of birth" });
-      return;
-    }
+    // if (dob >= today) {
+    //   res.status(400).json({ message: "Invalid date of birth" });
+    //   return;
+    // }
 
     // 🔹 Hash password securely
     const hashedPassword = await bcrypt.hash(password, 10);
