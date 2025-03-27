@@ -47,18 +47,20 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // 🔹 Validate required fields
         if (!userFullName ||
             !email ||
-            !password ||
-            !confirmPassword ||
-            !country ||
-            !dateOfBirth) {
+            !password
+        // ||
+        // !confirmPassword ||
+        // !country ||
+        // !dateOfBirth
+        ) {
             res.status(400).json({ message: "All fields are required" });
             return;
         }
         // 🔹 Password match check
-        if (password !== confirmPassword) {
-            res.status(400).json({ message: "Passwords do not match" });
-            return;
-        }
+        // if (password !== confirmPassword) {
+        //   res.status(400).json({ message: "Passwords do not match" });
+        //   return;
+        // }
         // 🔹 Check if user already exists
         const existingUser = yield userModel_1.default.findOne({ email });
         if (existingUser) {
@@ -71,12 +73,12 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 .json({ message: "Password must be at least 6 characters" });
             return;
         }
-        const dob = new Date(dateOfBirth);
-        const today = new Date();
-        if (dob >= today) {
-            res.status(400).json({ message: "Invalid date of birth" });
-            return;
-        }
+        // const dob = new Date(dateOfBirth);
+        // const today = new Date();
+        // if (dob >= today) {
+        //   res.status(400).json({ message: "Invalid date of birth" });
+        //   return;
+        // }
         // 🔹 Hash password securely
         const hashedPassword = yield bcryptjs_1.default.hash(password, 10);
         // 🔹 Create new user in MongoDB
@@ -147,7 +149,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         user.refreshToken = [refreshToken];
         yield user.save();
         // 🔹 Respond with user data and tokens
-        res.json({
+        res.status(200).json({
             message: "Login successful",
             accessToken,
             refreshToken,
@@ -369,9 +371,8 @@ const getProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.getProfile = getProfile;
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     try {
-        const users = yield userModel_1.default.find({ _id: { $ne: (_a = req.user) === null || _a === void 0 ? void 0 : _a._id } }).select("userFullName profileImage");
+        const users = yield userModel_1.default.find({}).select("userFullName profileImage email ");
         res.status(200).json(users);
     }
     catch (err) {
