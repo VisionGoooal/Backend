@@ -67,8 +67,15 @@ class BaseController {
         });
         this.updateItem = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const itemId = req.params.id;
-            console.log(req.body);
             try {
+                if (req.file) {
+                    const filePath = `/uploads/${req.file.filename}`;
+                    const baseUrl = process.env.BASE_URL || "https://node129.cs.colman.ac.il";
+                    const fullUrl = `${baseUrl}${filePath}`;
+                    const updatedItem = yield this.model.findByIdAndUpdate(itemId, { image: fullUrl }, // Only update the image field
+                    { new: true } // Return the updated document
+                    );
+                }
                 const item = yield this.model.findByIdAndUpdate(itemId, req.body, {
                     new: true,
                 });
@@ -78,7 +85,6 @@ class BaseController {
                         { path: "owner" }
                     ]);
                 }
-                console.log(item);
                 res.status(200).send(item);
             }
             catch (error) {

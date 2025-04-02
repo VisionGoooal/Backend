@@ -69,6 +69,7 @@ export const createPredictionsAutomatically = async () => {
 
 export const createPostByPrediction = async (req: any, res: any) => {
     const { title, content, owner, image, likes } = req.body;
+    console.log(image);
     const newPost = new postModel({
         title,
         content,
@@ -78,7 +79,8 @@ export const createPostByPrediction = async (req: any, res: any) => {
     });
     try {
         await newPost.save();
-        res.status(201).json(newPost);
+        const populatedPost = await newPost.populate("owner"); // Populate owner field
+        res.status(201).json(populatedPost);
     } catch (error) {
         console.error("Error adding post:", error);
         res.status(500).json({ message: "An error occurred while adding the post" });

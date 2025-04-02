@@ -69,9 +69,10 @@ export const createPost = async (req: any, res: any) => {
 
   try {
     await newPost.save();
+    await newPost.populate("owner", "_id userFullName profileImage");
     res.status(201).json(newPost);
   } catch (error) {
-    console.error("Error saving post:", error);
+    // console.error("Error saving post:", error);
     res.status(500).json({ message: "Error saving post - " + error });
   }
 };

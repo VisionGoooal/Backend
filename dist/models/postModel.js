@@ -54,6 +54,8 @@ const postSchema = new mongoose_1.Schema({
     owner: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true },
     likes: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "User" }],
     image: { type: String, default: null }, // Optional image field
+}, {
+    timestamps: true
 });
 // Pre-remove hook to delete associated comments when a post is deleted
 postSchema.pre("findOneAndDelete", function (next) {

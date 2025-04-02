@@ -73,6 +73,7 @@ const createPredictionsAutomatically = () => __awaiter(void 0, void 0, void 0, f
 exports.createPredictionsAutomatically = createPredictionsAutomatically;
 const createPostByPrediction = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { title, content, owner, image, likes } = req.body;
+    console.log(image);
     const newPost = new postModel_1.default({
         title,
         content,
@@ -82,7 +83,8 @@ const createPostByPrediction = (req, res) => __awaiter(void 0, void 0, void 0, f
     });
     try {
         yield newPost.save();
-        res.status(201).json(newPost);
+        const populatedPost = yield newPost.populate("owner"); // Populate owner field
+        res.status(201).json(populatedPost);
     }
     catch (error) {
         console.error("Error adding post:", error);

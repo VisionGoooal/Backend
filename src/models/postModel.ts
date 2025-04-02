@@ -7,6 +7,7 @@ export interface IPost {
   content: string;
   owner: { type: Schema.Types.ObjectId; ref: "User" };
   likes: [{ type: Schema.Types.ObjectId; ref: "User" }];
+  createdAt: Date;
   image?: string; // Optional field for image
 }
 
@@ -17,6 +18,9 @@ const postSchema: Schema = new Schema({
   owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
   likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
   image: { type: String, default: null }, // Optional image field
+  
+},{
+  timestamps: true
 });
 
 // Pre-remove hook to delete associated comments when a post is deleted

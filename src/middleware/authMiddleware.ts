@@ -21,7 +21,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction): 
 
     next(); // ✅ Proceed to next middleware/controller
   } catch (error) {
-    console.error("❌ Authentication Error:", error);
+    // console.error("❌ Authentication Error:", error);
     res.status(401).json({ message: "Invalid or expired token" });
   }
 };

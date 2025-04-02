@@ -68,6 +68,7 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     });
     try {
         yield newPost.save();
+        yield newPost.populate("owner", "_id userFullName profileImage");
         res.status(201).json(newPost);
     }
     catch (error) {

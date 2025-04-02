@@ -67,17 +67,27 @@ class BaseController<T> {
 
   updateItem = async (req: Request, res: Response) => {
     const itemId = req.params.id;
-    console.log(req.body)
     try {
+      if(req.file)
+        {
+          const filePath = `/uploads/${req.file.filename}`;
+          const baseUrl = process.env.BASE_URL || "https://node129.cs.colman.ac.il";
+          const fullUrl = `${baseUrl}${filePath}`;
+          const updatedItem = await this.model.findByIdAndUpdate(
+            itemId, 
+            { image: fullUrl },  // Only update the image field
+            { new: true }  // Return the updated document
+          )
+        }
       const item = await this.model.findByIdAndUpdate(itemId, req.body, {
         new: true,
       });
        // Check if it's a Post model and populate
     if (this.model.modelName === "Post" && item) {
+     
       await (item as Document).populate([
     { path: "owner" }  ]);
     }
-      console.log(item)
       res.status(200).send(item);
     } catch (error) {
       res.status(400).send(error);

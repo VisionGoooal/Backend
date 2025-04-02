@@ -394,7 +394,7 @@ export const uploadProfileImage = async (
     await user.save(); // 🔥 Saves the new profile image path in the DB
 
     // Optionally construct full URL to send to frontend
-    const baseUrl = process.env.BASE_URL || "http://localhost:5000";
+    const baseUrl = process.env.BASE_URL || "https://node129.cs.colman.ac.il";
     const fullUrl = `${baseUrl}${filePath}`;
 
     res.json({
